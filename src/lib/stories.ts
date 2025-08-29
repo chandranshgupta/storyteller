@@ -1,3 +1,4 @@
+
 import type { ComponentType } from "react";
 
 export interface Chapter {
@@ -60,14 +61,18 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // Gemini
-      { x: -5, y: 10, z: 0, brightness: 2.2 },  // Castor
-      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux
-      { x: -3, y: 4, z: -1, brightness: 1.5 }, // Wasat
-      { x: 3, y: -2, z: 2, brightness: 1.2 },
-      { x: 5, y: -5, z: 1, brightness: 1.6 },  // Tejat Posterior
-      { x: -1, y: -8, z: -2, brightness: 1.9 },// Alhena
-      { x: 6, y: -8, z: 0, brightness: 1.3 },
+    constellation: [ // A more accurate Gemini
+      // Pollux (the brighter twin)
+      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux (Head)
+      { x: -6, y: 3, z: 1, brightness: 1.5 },
+      { x: -4, y: -2, z: 0, brightness: 1.2 },
+      { x: -2, y: -8, z: -2, brightness: 1.9 },// Alhena (Foot)
+      
+      // Castor (the other twin)
+      { x: 5, y: 10, z: 0, brightness: 2.2 },  // Castor (Head)
+      { x: 3, y: 4, z: -1, brightness: 1.5 }, // Wasat
+      { x: 4, y: -1, z: 1 },
+      { x: 6, y: -5, z: 1, brightness: 1.6 }, // Tejat Posterior (Foot)
     ],
   },
   {
@@ -91,21 +96,21 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // Scorpius
-      { x: 1, y: 2, z: 0, brightness: 2.8 },    // Antares (The heart)
-      { x: 0, y: 5, z: -1, brightness: 1.8 },   // Graffias
-      { x: 2.5, y: 4.5, z: 1, brightness: 1.6 }, // Dschubba
-      { x: 3.5, y: 4, z: 1.5 },
-      { x: 1.5, y: -1, z: 0.5, brightness: 1.5 },
-      { x: 2, y: -3, z: -0.5, brightness: 1.6 },
-      { x: 3.5, y: -5.5, z: -1, brightness: 1.7 },
-      { x: 5, y: -8, z: -1.5, brightness: 1.5 },
-      { x: 4, y: -10.5, z: -1 },
-      { x: 2, y: -12, z: -0.5, brightness: 1.9 }, // Sargas
-      { x: -0.5, y: -13, z: 0.5 },
-      { x: -3, y: -14, z: 1 },
-      { x: -5, y: -13, z: 1.5, brightness: 2.2 }, // Shaula (stinger)
-      { x: -6, y: -12, z: 2, brightness: 2.1 },   // Lesath (stinger)
+    constellation: [ // A more accurate Scorpius
+      { x: 1, y: 5, z: -1, brightness: 1.8 },   // Graffias (Claw)
+      { x: -1, y: 5.5, z: 0.5, brightness: 1.6},// Dschubba (Claw)
+      { x: -3, y: 5, z: 1.5, brightness: 1.4},  // (Claw)
+      { x: -3, y: 2, z: 0, brightness: 2.8 },    // Antares (The heart)
+      { x: -2.5, y: -1, z: 0.5, brightness: 1.5 },
+      { x: -2, y: -3, z: -0.5, brightness: 1.6 },
+      { x: -1, y: -5.5, z: -1, brightness: 1.7 },
+      { x: 0.5, y: -8, z: -1.5, brightness: 1.5 },
+      { x: 2, y: -9.5, z: -1 },
+      { x: 4.5, y: -10, z: -0.5, brightness: 1.9 }, // Sargas
+      { x: 5, y: -8, z: 0.5 },
+      { x: 7, y: -7, z: 1 },
+      { x: 8.5, y: -8.5, z: 1.5, brightness: 2.2 }, // Shaula (stinger)
+      { x: 9.5, y: -7.5, z: 2, brightness: 2.1 },   // Lesath (stinger)
     ],
   },
 ];
