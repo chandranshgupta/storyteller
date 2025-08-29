@@ -61,18 +61,18 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // A more accurate Gemini
-      // Pollux (the brighter twin)
-      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux (Head)
-      { x: -6, y: 3, z: 1, brightness: 1.5 },
-      { x: -4, y: -2, z: 0, brightness: 1.2 },
-      { x: -2, y: -8, z: -2, brightness: 1.9 },// Alhena (Foot)
-      
-      // Castor (the other twin)
+    constellation: [ // Gemini
+      // Castor line
       { x: 5, y: 10, z: 0, brightness: 2.2 },  // Castor (Head)
       { x: 3, y: 4, z: -1, brightness: 1.5 }, // Wasat
       { x: 4, y: -1, z: 1 },
       { x: 6, y: -5, z: 1, brightness: 1.6 }, // Tejat Posterior (Foot)
+
+      // Pollux line
+      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux (Head)
+      { x: -6, y: 3, z: 1, brightness: 1.5 },
+      { x: -4, y: -2, z: 0, brightness: 1.2 },
+      { x: -2, y: -8, z: -2, brightness: 1.9 },// Alhena (Foot)
     ],
   },
   {
@@ -96,19 +96,18 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // A more accurate Scorpius
-      { x: 1, y: 5, z: -1, brightness: 1.8 },   // Graffias (Claw)
-      { x: -1, y: 5.5, z: 0.5, brightness: 1.6},// Dschubba (Claw)
-      { x: -3, y: 5, z: 1.5, brightness: 1.4},  // (Claw)
-      { x: -3, y: 2, z: 0, brightness: 2.8 },    // Antares (The heart)
-      { x: -2.5, y: -1, z: 0.5, brightness: 1.5 },
-      { x: -2, y: -3, z: -0.5, brightness: 1.6 },
-      { x: -1, y: -5.5, z: -1, brightness: 1.7 },
-      { x: 0.5, y: -8, z: -1.5, brightness: 1.5 },
-      { x: 2, y: -9.5, z: -1 },
+    constellation: [ // Scorpius
+      { x: -3, y: 5, z: 1.5, brightness: 1.4},  // Top Claw
+      { x: 1, y: 5, z: -1, brightness: 1.8 },   // Mid Claw
+      { x: -1, y: 5.5, z: 0.5, brightness: 1.6},// Bottom Claw
+      { x: -3, y: 2, z: 0, brightness: 2.8 },  // Antares (The heart)
+      { x: -2.5, y: -1, z: 0.5, brightness: 1.5 }, // Body
+      { x: -2, y: -3, z: -0.5, brightness: 1.6 }, // Body
+      { x: -1, y: -5.5, z: -1, brightness: 1.7 }, // Body
+      { x: 0.5, y: -8, z: -1.5, brightness: 1.5 },// Start of Hook
+      { x: 2, y: -9.5, z: -1 }, // Mid Hook
       { x: 4.5, y: -10, z: -0.5, brightness: 1.9 }, // Sargas
-      { x: 5, y: -8, z: 0.5 },
-      { x: 7, y: -7, z: 1 },
+      { x: 7, y: -7, z: 1 }, // End of Hook
       { x: 8.5, y: -8.5, z: 1.5, brightness: 2.2 }, // Shaula (stinger)
       { x: 9.5, y: -7.5, z: 2, brightness: 2.1 },   // Lesath (stinger)
     ],
