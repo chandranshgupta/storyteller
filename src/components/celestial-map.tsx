@@ -3,7 +3,7 @@
 
 import * as THREE from "three";
 import React, { useRef, useEffect, useState, useMemo } from "react";
-import type { Story } from "@/lib/stories";
+import type { Story, ConstellationStar } from "@/lib/stories";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 import ReactDOMServer from 'react-dom/server';
@@ -17,10 +17,10 @@ interface CelestialMapProps {
 const STAR_COLORS = [0xffffff, 0xffd2a1, 0xa1cfff];
 
 function createIcon(IconComponent: React.ComponentType<{className?: string}>): THREE.Group {
-    const iconHTML = ReactDOMServer.renderToString(new IconComponent({ className: 'w-8 h-8' }));
-    const iconContainer = document.createElement('div');
-    iconContainer.innerHTML = iconHTML;
-    const svgElement = iconContainer.querySelector('svg');
+    const iconHTML = ReactDOMServer.renderToString(<IconComponent className="w-8 h-8" />);
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(iconHTML, "image/svg+xml");
+    const svgElement = doc.querySelector('svg');
 
     if (!svgElement) {
         console.error("Could not create SVG element from component");
@@ -146,16 +146,17 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       group.userData = { story };
       group.position.copy(position);
       
-      story.constellation.forEach(pos => {
-        const size = 0.2 + Math.random() * 0.2;
+      story.constellation.forEach((starData: ConstellationStar) => {
+        const brightness = starData.brightness || 1.0;
+        const size = (0.2 + Math.random() * 0.2) * brightness;
         const starGeo = new THREE.SphereGeometry(size, 24, 24);
         const color = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
-        const starMat = new THREE.MeshBasicMaterial({ 
+        const starMat = new THREE.MeshBasicMaterial({
           color,
-          opacity: 0.8 + Math.random() * 0.2,
+          opacity: Math.min(1.0, (0.8 + Math.random() * 0.2) * brightness),
          });
         const starMesh = new THREE.Mesh(starGeo, starMat);
-        starMesh.position.set(pos.x, pos.y, pos.z);
+        starMesh.position.set(starData.x, starData.y, starData.z);
         group.add(starMesh);
       });
 
@@ -284,5 +285,3 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     </TooltipProvider>
   );
 }
-
-    

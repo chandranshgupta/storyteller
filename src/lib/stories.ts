@@ -7,6 +7,13 @@ export interface Chapter {
   dataAiHint: string;
 }
 
+export interface ConstellationStar {
+  x: number;
+  y: number;
+  z: number;
+  brightness?: number; // Optional brightness multiplier (e.g., 1.5 for brighter)
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -15,7 +22,7 @@ export interface Story {
   characters: string[];
   icon: ComponentType<{ className?: string }>;
   chapters: Chapter[];
-  constellation: { x: number; y: number; z: number }[];
+  constellation: ConstellationStar[];
 }
 
 import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
@@ -52,19 +59,20 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // Gemini (Castor & Pollux)
-      { x: -5, y: 10, z: 0 }, { x: 5, y: 10, z: 0 }, // Pollux, Castor
-      { x: -4, y: 8, z: 2 }, { x: 4, y: 8, z: 2 },
-      { x: -6, y: 5, z: -1 }, { x: 6, y: 5, z: -1 },
-      { x: -7, y: 0, z: 1 }, { x: 7, y: 0, z: 1 },
-      { x: -8, y: -5, z: 0 }, { x: 8, y: -5, z: 0 },
-      { x: -9, y: -10, z: -2 }, { x: 9, y: -10, z: -2 },
+    constellation: [ // Gemini
+      { x: -5, y: 10, z: 0, brightness: 1.8 },  // Castor
+      { x: -8, y: 8, z: 2, brightness: 2 },   // Pollux
+      { x: -3, y: 4, z: -1 },                 // Wasat
+      { x: 3, y: -2, z: 2 },
+      { x: 5, y: -5, z: 1 },                  // Tejat Posterior
+      { x: -1, y: -8, z: -2 },                // Alhena
+      { x: 6, y: -8, z: 0 },
     ],
   },
   {
     id: "mahabharata",
     title: "The Mahabharata",
-    nakshatraName: "Krittika",
+    nakshatraName: "Jyeshtha",
     summary:
       "One of the two major Sanskrit epics of ancient India, the Mahabharata is an epic narrative of the Kurukshetra War and the fates of the Kaurava and the Pandava princes.",
     characters: ["Krishna", "Arjuna", "Draupadi", "Duryodhana"],
@@ -83,7 +91,7 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Scorpius
-      { x: 0, y: 2, z: 0 }, // Antares
+      { x: 0, y: 2, z: 0, brightness: 2.5 }, // Antares
       { x: -2, y: 3, z: 1 }, { x: 2, y: 3, z: 1 }, // Head
       { x: -5, y: 1, z: -1 },
       { x: -8, y: -2, z: 0 }, // Body
