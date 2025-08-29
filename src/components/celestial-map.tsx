@@ -63,6 +63,13 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     stories.forEach((story) => {
       const group = new THREE.Group();
       group.userData = { story };
+      
+      // Randomize constellation group position
+      const randomX = (Math.random() - 0.5) * 80;
+      const randomY = (Math.random() - 0.5) * 40;
+      const randomZ = -50 - Math.random() * 20;
+      group.position.set(randomX, randomY, randomZ);
+      
       story.constellation.forEach(pos => {
         const starGeo = new THREE.SphereGeometry(0.3, 24, 24);
         const starMat = new THREE.MeshBasicMaterial({ color: 0xD2B48C });
@@ -114,7 +121,9 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       let foundStory = null;
       storyObjects.forEach(obj => {
           (obj as THREE.Group).children.forEach(child => {
-            ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
+             if (child instanceof THREE.Mesh) {
+                (child.material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
+             }
           });
       });
 
@@ -127,7 +136,9 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         if (parentGroup.userData.story) {
             foundStory = parentGroup.userData.story;
             (parentGroup as THREE.Group).children.forEach(child => {
-                ((child as THREE.Mesh).material as THREE.MeshBasicMaterial).color.set(0xffffff);
+                if (child instanceof THREE.Mesh) {
+                    (child.material as THREE.MeshBasicMaterial).color.set(0xffffff);
+                }
             });
         }
       }
