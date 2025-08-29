@@ -63,18 +63,14 @@ export const stories: Story[] = [
     ],
     constellation: [ // Gemini
       // Pollux (left twin)
-      { x: -5, y: 10, z: 0, brightness: 2.5 }, // Pollux (Head)
-      { x: -4.5, y: 5, z: 0 },               // Body
-      { x: -4, y: -1, z: 0 },                // Body/Hip
-      { x: -5, y: -6, z: 0, brightness: 1.9 }, // Alhena (Foot)
-      { x: -2, y: -0.5, z: 0 },              // Hand
+      { x: -5, y: 10, z: 0, brightness: 2.5 }, 
+      { x: -4, y: 0, z: 0 },
+      { x: -5, y: -8, z: 0, brightness: 1.9 },
 
       // Castor (right twin)
-      { x: 5, y: 11, z: 0, brightness: 2.2 }, // Castor (Head)
-      { x: 4, y: 6, z: 0 },                  // Body
-      { x: 3, y: 2, z: 0 },                  // Body/Hip
-      { x: 2.5, y: -4, z: 0, brightness: 1.6 },// Tejat (Foot)
-      { x: 1, y: 2.5, z: 0 },                // Hand
+      { x: 5, y: 11, z: 0, brightness: 2.2 },
+      { x: 4, y: 0, z: 0 },
+      { x: 3, y: -8, z: 0, brightness: 1.6 },
     ],
   },
   {
@@ -98,22 +94,28 @@ export const stories: Story[] = [
         ],
       }
     ],
-    constellation: [ // Scorpius
-      // Claws
-      { x: -10, y: 8, z: 0, brightness: 1.8 },
-      { x: -6, y: 6, z: 0, brightness: 1.6 },
-      { x: -9, y: 4, z: 0, brightness: 1.5 },
-      // Body and Heart
-      { x: -5, y: 2, z: 0, brightness: 2.8 }, // Antares
-      { x: -4, y: -2, z: 0 },
-      { x: -3, y: -6, z: 0 },
-      // Tail and Stinger
-      { x: -1, y: -9, z: 0 },
-      { x: 3, y: -11, z: 0 },
-      { x: 7, y: -10, z: 0, brightness: 1.9 }, // Sargas
-      { x: 9, y: -7, z: 0 },
-      { x: 10, y: -8, z: 0, brightness: 2.2 }, // Shaula (Stinger)
-      { x: 11, y: -7.5, z: 0, brightness: 2.1}, // Lesath (Stinger)
+    constellation: [ // Scorpius - new coordinates based on user image
+      // Head/Claws area on the right
+      { x: 10, y: 7, z: 0, brightness: 1.8 },  // Brightest star in the claw-like feature
+      { x: 13, y: 8, z: 0 },
+      { x: 14, y: 5, z: 0 },
+      { x: 10.5, y: 3.5, z: 0 },
+      { x: 8, y: 2, z: 0 },
+      
+      // Main Body
+      { x: 5, y: 1.5, z: 0, brightness: 2.8 }, // The star before the main curve (Antares analogue)
+      { x: 1, y: 0, z: 0 },
+      { x: -2, y: -2, z: 0 },
+      
+      // Curve of the tail
+      { x: -5, y: -5, z: 0 },
+      { x: -8, y: -6, z: 0, brightness: 1.5 },
+      { x: -11, y: -5, z: 0 },
+      { x: -13, y: -3, z: 0, brightness: 2.2 }, // Bright star in the lower hook
+      
+      // Stinger
+      { x: -14, y: 0, z: 0 },
+      { x: -16, y: 1, z: 0 },
     ],
   },
 ];
