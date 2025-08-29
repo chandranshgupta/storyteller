@@ -1,5 +1,6 @@
+
 export function RamaPadukaIcon({ className }: { className?: string }) {
-    // This is a simplified representation of Rama's Paduka (sandals)
+    // A more detailed representation of Rama's Paduka (sandals)
     return (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -11,11 +12,13 @@ export function RamaPadukaIcon({ className }: { className?: string }) {
         strokeLinejoin="round"
         className={className}
         dangerouslySetInnerHTML={{ __html: `
-        <g>
-          <path d="M24,58 C26,55 27,48 26,42 C25,36 22,30 20,28 C18,26 15,28 14,32 C13,36 15,45 18,52 C21,59 22,61 24,58 Z" />
-          <path d="M19,38 A3,3 0 0,1 25,38 A3,3 0 0,1 19,38" />
-          <path d="M44,58 C46,55 47,48 46,42 C45,36 42,30 40,28 C38,26 35,28 34,32 C33,36 35,45 38,52 C41,59 42,61 44,58 Z" />
-          <path d="M39,38 A3,3 0 0,1 45,38 A3,3 0 0,1 39,38" />
+        <g transform="scale(1.2) translate(-5, -5)">
+          <path d="M22,52 C22,46 24,40 28,38 C32,36 36,38 36,44 C36,50 32,56 28,58 C24,60 22,58 22,52 Z" />
+          <path d="M29,35 A4,4 0 0,1 33,39 A4,4 0 0,1 29,35" />
+          <path d="M42,52 C42,46 44,40 48,38 C52,36 56,38 56,44 C56,50 52,56 48,58 C44,60 42,58 42,52 Z" />
+          <path d="M49,35 A4,4 0 0,1 53,39 A4,4 0 0,1 49,35" />
+          <path d="M28,30C28,26 30,22 32,22C34,22 36,26 36,30" />
+          <path d="M48,30C48,26 50,22 52,22C54,22 56,26 56,30" />
         </g>
       `}}
       />
