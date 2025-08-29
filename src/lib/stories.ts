@@ -27,6 +27,7 @@ export interface Story {
 
 import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
 import { ChakraIcon } from "@/components/icons/chakra-icon";
+import { BowIcon } from "@/components/icons/bow-icon";
 
 export const stories: Story[] = [
   {
@@ -36,7 +37,7 @@ export const stories: Story[] = [
     summary:
       "An ancient Indian epic which narrates the struggle of the divine prince Rama to rescue his wife Sita from the demon king Ravana. Along with Mahabharata, it forms the Hindu Itihasa.",
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
-    icon: RamaPadukaIcon,
+    icon: BowIcon,
     chapters: [
       {
         title: "A Prince's Virtue",
@@ -60,13 +61,13 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Gemini
-      { x: -5, y: 10, z: 0, brightness: 1.8 },  // Castor
-      { x: -8, y: 8, z: 2, brightness: 2 },   // Pollux
-      { x: -3, y: 4, z: -1 },                 // Wasat
-      { x: 3, y: -2, z: 2 },
-      { x: 5, y: -5, z: 1 },                  // Tejat Posterior
-      { x: -1, y: -8, z: -2 },                // Alhena
-      { x: 6, y: -8, z: 0 },
+      { x: -5, y: 10, z: 0, brightness: 2.2 },  // Castor
+      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux
+      { x: -3, y: 4, z: -1, brightness: 1.5 }, // Wasat
+      { x: 3, y: -2, z: 2, brightness: 1.2 },
+      { x: 5, y: -5, z: 1, brightness: 1.6 },  // Tejat Posterior
+      { x: -1, y: -8, z: -2, brightness: 1.9 },// Alhena
+      { x: 6, y: -8, z: 0, brightness: 1.3 },
     ],
   },
   {
@@ -91,16 +92,20 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Scorpius
-      { x: 0, y: 2, z: 0, brightness: 2.5 }, // Antares
-      { x: -2, y: 3, z: 1 }, { x: 2, y: 3, z: 1 }, // Head
-      { x: -5, y: 1, z: -1 },
-      { x: -8, y: -2, z: 0 }, // Body
-      { x: -10, y: -5, z: 2 },
-      { x: -11, y: -8, z: 3 }, // Tail
-      { x: -10, y: -11, z: 1 },
-      { x: -8, y: -13, z: 0 },
-      { x: -6, y: -14, z: -2 }, // Stinger
-      { x: -4, y: -13, z: -1 },
+      { x: 1, y: 2, z: 0, brightness: 2.8 },    // Antares (The heart)
+      { x: 0, y: 5, z: -1, brightness: 1.8 },   // Graffias
+      { x: 2.5, y: 4.5, z: 1, brightness: 1.6 }, // Dschubba
+      { x: 3.5, y: 4, z: 1.5 },
+      { x: 1.5, y: -1, z: 0.5, brightness: 1.5 },
+      { x: 2, y: -3, z: -0.5, brightness: 1.6 },
+      { x: 3.5, y: -5.5, z: -1, brightness: 1.7 },
+      { x: 5, y: -8, z: -1.5, brightness: 1.5 },
+      { x: 4, y: -10.5, z: -1 },
+      { x: 2, y: -12, z: -0.5, brightness: 1.9 }, // Sargas
+      { x: -0.5, y: -13, z: 0.5 },
+      { x: -3, y: -14, z: 1 },
+      { x: -5, y: -13, z: 1.5, brightness: 2.2 }, // Shaula (stinger)
+      { x: -6, y: -12, z: 2, brightness: 2.1 },   // Lesath (stinger)
     ],
   },
 ];
