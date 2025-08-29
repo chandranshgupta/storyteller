@@ -11,7 +11,7 @@ export function ChakraIcon({ className }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         className={className}
-        dangerouslySetInnerHTML={{ __html: `
+      >
         <g>
             <circle cx="12" cy="12" r="10" />
             <circle cx="12" cy="12" r="3" />
@@ -56,8 +56,7 @@ export function ChakraIcon({ className }: { className?: string }) {
                 </g>
             </g>
         </g>
-      `}}
-      />
+      </svg>
     );
   }
   

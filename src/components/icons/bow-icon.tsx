@@ -10,7 +10,7 @@ export function BowIcon({ className }: { className?: string }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         className={className}
-        dangerouslySetInnerHTML={{ __html: `
+      >
         <g>
             <path d="M3 21c3.12.88 6.5-.41 9-3 2.5-2.59 4.12-6 3-9-1.12-3-4.41-4.62-7-3-2.59 1.62-3.88 5-3 8Z" />
             <path d="M3 21h3" />
@@ -18,8 +18,7 @@ export function BowIcon({ className }: { className?: string }) {
             <path d="M12 12h-3" />
             <path d="m3 21 9-9" />
         </g>
-      `}}
-      />
+      </svg>
     );
   }
   
