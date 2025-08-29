@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { CelestialMap } from "@/components/celestial-map";
 import { Manuscript } from "@/components/manuscript";
 import { StoryView } from "@/components/story-view";
-import { AppHeader } from "@/components/app-header";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
 
@@ -41,12 +40,17 @@ export default function Home() {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <AppHeader />
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
         {isTransitioning && <FallingStar />}
 
         {view === "celestial" && !selectedStory && (
-          <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
+          <>
+            <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
+              <h1 className="text-5xl font-bold font-headline">The Celestial Map</h1>
+              <p className="mt-4 text-lg text-white/80">Choose a story from the Nakshatras.</p>
+            </div>
+            <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
+          </>
         )}
         
         {view === 'manuscript' && selectedStory && (
