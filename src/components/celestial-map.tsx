@@ -191,6 +191,42 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       storyObjects.push(group);
     });
 
+    const comet = new THREE.Group();
+    const cometHead = new THREE.Mesh(
+        new THREE.SphereGeometry(0.3, 16, 16),
+        new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending })
+    );
+    comet.add(cometHead);
+    scene.add(comet);
+    comet.visible = false;
+
+    let cometData = {
+        velocity: new THREE.Vector3(),
+        resetTimeout: -1,
+    };
+
+    function launchComet() {
+        comet.visible = true;
+        const startY = Math.random() * 60 - 30;
+        const startZ = -50 - Math.random() * 50;
+        comet.position.set(-100, startY, startZ);
+        
+        const endY = startY + (Math.random() - 0.5) * 20;
+        const endX = 100;
+        
+        const direction = new THREE.Vector3(endX, endY, startZ).sub(comet.position).normalize();
+        const speed = 0.5 + Math.random() * 0.5;
+        cometData.velocity = direction.multiplyScalar(speed);
+    }
+    
+    function scheduleNextComet() {
+        const randomInterval = Math.random() * 8000 + 4000; // 4 to 12 seconds
+        cometData.resetTimeout = window.setTimeout(launchComet, randomInterval);
+    }
+
+    scheduleNextComet();
+
+
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -232,11 +268,21 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
            if (child instanceof THREE.Group && child.name !== 'story_icon') {
               const initialOpacity = child.userData.initialOpacity || 0.8;
               const opacity = initialOpacity * (0.6 + 0.4 * Math.sin(time * 2 + child.position.x));
-              (child.children[0] as THREE.Mesh).material.opacity = opacity;
-              (child.children[1] as THREE.Sprite).material.opacity = opacity * 0.4;
+              ((child.children[0] as THREE.Mesh).material as THREE.Material).opacity = opacity;
+              ((child.children[1] as THREE.Sprite).material as THREE.Material).opacity = opacity * 0.4;
            }
         });
       });
+
+      // Animate comet
+      if (comet.visible) {
+          comet.position.add(cometData.velocity);
+          if (comet.position.x > 100) { // If it goes off-screen
+              comet.visible = false;
+              scheduleNextComet();
+          }
+      }
+
 
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(storyObjects, true);
@@ -292,6 +338,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
 
     return () => {
       window.removeEventListener("resize", handleResize);
+      clearTimeout(cometData.resetTimeout);
       if (currentMount) {
         currentMount.removeEventListener("mousemove", onMouseMove);
         currentMount.removeEventListener("click", onClick);
@@ -320,5 +367,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     </TooltipProvider>
   );
 }
+
+    
 
     
