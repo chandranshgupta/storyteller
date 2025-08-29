@@ -37,7 +37,7 @@ export const stories: Story[] = [
     summary:
       "An ancient Indian epic which narrates the struggle of the divine prince Rama to rescue his wife Sita from the demon king Ravana. Along with Mahabharata, it forms the Hindu Itihasa.",
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
-    icon: BowIcon,
+    icon: RamaPadukaIcon,
     chapters: [
       {
         title: "A Prince's Virtue",
