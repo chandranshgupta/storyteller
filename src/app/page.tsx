@@ -70,7 +70,7 @@ export default function Home() {
 }
 
 const FallingStar = () => (
-  <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none">
+  <div className="absolute inset-0 z-[100] flex items-center justify-center pointer-events-none">
     <div
       className="bg-white rounded-full animate-falling-star"
       style={{
