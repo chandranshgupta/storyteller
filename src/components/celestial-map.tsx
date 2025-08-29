@@ -136,6 +136,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       size: 0.5,
       transparent: true,
       opacity: 0.8,
+      blending: THREE.AdditiveBlending,
     });
     const stars = new THREE.Points(starGeometry, starMaterial);
     scene.add(stars);
@@ -150,11 +151,14 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         const brightness = starData.brightness || 1.0;
         const size = (0.2 + Math.random() * 0.2) * brightness;
         const starGeo = new THREE.SphereGeometry(size, 24, 24);
-        const color = STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)];
+        
         const starMat = new THREE.MeshBasicMaterial({
-          color,
-          opacity: Math.min(1.0, (0.8 + Math.random() * 0.2) * brightness),
+          color: 0xffffff,
+          transparent: true,
+          opacity: Math.min(1.0, (0.7 + Math.random() * 0.3) * brightness),
+          blending: THREE.AdditiveBlending,
          });
+
         const starMesh = new THREE.Mesh(starGeo, starMat);
         starMesh.position.set(starData.x, starData.y, starData.z);
         group.add(starMesh);
@@ -196,8 +200,27 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     currentMount.addEventListener("mousemove", onMouseMove);
     currentMount.addEventListener("click", onClick);
 
+    const clock = new THREE.Clock();
+
     const animate = () => {
       requestAnimationFrame(animate);
+
+      const delta = clock.getDelta();
+      const time = clock.getElapsedTime();
+
+      // Twinkle effect for constellation stars
+      storyObjects.forEach(obj => {
+        (obj as THREE.Group).children.forEach(child => {
+           if (child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry) {
+              const material = child.material as THREE.MeshBasicMaterial;
+              const initialOpacity = material.userData.initialOpacity || material.opacity;
+              if (!material.userData.initialOpacity) {
+                material.userData.initialOpacity = material.opacity;
+              }
+              material.opacity = initialOpacity * (0.5 + 0.5 * Math.sin(time * 2 + child.position.x));
+           }
+        });
+      });
 
       raycaster.setFromCamera(mouse, camera);
       const intersects = raycaster.intersectObjects(storyObjects, true);
@@ -205,12 +228,12 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       let foundStory = null;
       storyObjects.forEach(obj => {
           (obj as THREE.Group).children.forEach(child => {
-             if (child instanceof THREE.Mesh) {
-                (child.material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
+             if (child instanceof THREE.Mesh && child.name !== 'story_icon') {
+                (child.material as THREE.MeshBasicMaterial).color.set(0xffffff);
              } else if (child.name === 'story_icon') {
                  (child as THREE.Group).children.forEach(c => {
                     if (c instanceof THREE.Mesh) {
-                        (c.material as THREE.MeshBasicMaterial).color.set(0xD2B44C);
+                        (c.material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
                         (c.material as THREE.MeshBasicMaterial).opacity = 0.6;
                     }
                  });
@@ -227,7 +250,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         if (parentGroup.userData.story) {
             foundStory = parentGroup.userData.story;
             (parentGroup as THREE.Group).children.forEach(child => {
-                if (child instanceof THREE.Mesh) {
+                if (child instanceof THREE.Mesh && child.name !== 'story_icon') {
                     (child.material as THREE.MeshBasicMaterial).color.set(0xffffff);
                 } else if (child.name === 'story_icon') {
                     (child as THREE.Group).children.forEach(c => {
@@ -285,3 +308,5 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     </TooltipProvider>
   );
 }
+
+    
