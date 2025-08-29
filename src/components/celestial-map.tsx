@@ -1,3 +1,4 @@
+
 "use client";
 
 import * as THREE from "three";
@@ -5,6 +6,8 @@ import React, { useRef, useEffect, useState, useMemo } from "react";
 import type { Story } from "@/lib/stories";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
+import ReactDOMServer from 'react-dom/server';
+
 
 interface CelestialMapProps {
   stories: Story[];
@@ -14,10 +17,16 @@ interface CelestialMapProps {
 const STAR_COLORS = [0xffffff, 0xffd2a1, 0xa1cfff];
 
 function createIcon(IconComponent: React.ComponentType<{className?: string}>): THREE.Group {
+    const iconHTML = ReactDOMServer.renderToString(new IconComponent({ className: 'w-8 h-8' }));
     const iconContainer = document.createElement('div');
-    iconContainer.innerHTML = new IconComponent({ className: 'w-8 h-8' }).props.dangerouslySetInnerHTML.__html;
-    const svgElement = iconContainer.querySelector('svg')!;
+    iconContainer.innerHTML = iconHTML;
+    const svgElement = iconContainer.querySelector('svg');
 
+    if (!svgElement) {
+        console.error("Could not create SVG element from component");
+        return new THREE.Group();
+    }
+    
     const loader = new SVGLoader();
     const svgData = loader.parse(new XMLSerializer().serializeToString(svgElement));
     
@@ -200,7 +209,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
              } else if (child.name === 'story_icon') {
                  (child as THREE.Group).children.forEach(c => {
                     if (c instanceof THREE.Mesh) {
-                        (c.material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
+                        (c.material as THREE.MeshBasicMaterial).color.set(0xD2B44C);
                         (c.material as THREE.MeshBasicMaterial).opacity = 0.6;
                     }
                  });
@@ -275,3 +284,5 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     </TooltipProvider>
   );
 }
+
+    
