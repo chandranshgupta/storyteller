@@ -62,17 +62,19 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Gemini
-      // Castor line
-      { x: 5, y: 10, z: 0, brightness: 2.2 },  // Castor (Head)
-      { x: 3, y: 4, z: -1, brightness: 1.5 }, // Wasat
-      { x: 4, y: -1, z: 1 },
-      { x: 6, y: -5, z: 1, brightness: 1.6 }, // Tejat Posterior (Foot)
+      // Pollux (left twin)
+      { x: -5, y: 10, z: 0, brightness: 2.5 }, // Pollux (Head)
+      { x: -4.5, y: 5, z: 0 },               // Body
+      { x: -4, y: -1, z: 0 },                // Body/Hip
+      { x: -5, y: -6, z: 0, brightness: 1.9 }, // Alhena (Foot)
+      { x: -2, y: -0.5, z: 0 },              // Hand
 
-      // Pollux line
-      { x: -8, y: 8, z: 2, brightness: 2.5 },   // Pollux (Head)
-      { x: -6, y: 3, z: 1, brightness: 1.5 },
-      { x: -4, y: -2, z: 0, brightness: 1.2 },
-      { x: -2, y: -8, z: -2, brightness: 1.9 },// Alhena (Foot)
+      // Castor (right twin)
+      { x: 5, y: 11, z: 0, brightness: 2.2 }, // Castor (Head)
+      { x: 4, y: 6, z: 0 },                  // Body
+      { x: 3, y: 2, z: 0 },                  // Body/Hip
+      { x: 2.5, y: -4, z: 0, brightness: 1.6 },// Tejat (Foot)
+      { x: 1, y: 2.5, z: 0 },                // Hand
     ],
   },
   {
@@ -97,19 +99,21 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Scorpius
-      { x: -3, y: 5, z: 1.5, brightness: 1.4},  // Top Claw
-      { x: 1, y: 5, z: -1, brightness: 1.8 },   // Mid Claw
-      { x: -1, y: 5.5, z: 0.5, brightness: 1.6},// Bottom Claw
-      { x: -3, y: 2, z: 0, brightness: 2.8 },  // Antares (The heart)
-      { x: -2.5, y: -1, z: 0.5, brightness: 1.5 }, // Body
-      { x: -2, y: -3, z: -0.5, brightness: 1.6 }, // Body
-      { x: -1, y: -5.5, z: -1, brightness: 1.7 }, // Body
-      { x: 0.5, y: -8, z: -1.5, brightness: 1.5 },// Start of Hook
-      { x: 2, y: -9.5, z: -1 }, // Mid Hook
-      { x: 4.5, y: -10, z: -0.5, brightness: 1.9 }, // Sargas
-      { x: 7, y: -7, z: 1 }, // End of Hook
-      { x: 8.5, y: -8.5, z: 1.5, brightness: 2.2 }, // Shaula (stinger)
-      { x: 9.5, y: -7.5, z: 2, brightness: 2.1 },   // Lesath (stinger)
+      // Claws
+      { x: -10, y: 8, z: 0, brightness: 1.8 },
+      { x: -6, y: 6, z: 0, brightness: 1.6 },
+      { x: -9, y: 4, z: 0, brightness: 1.5 },
+      // Body and Heart
+      { x: -5, y: 2, z: 0, brightness: 2.8 }, // Antares
+      { x: -4, y: -2, z: 0 },
+      { x: -3, y: -6, z: 0 },
+      // Tail and Stinger
+      { x: -1, y: -9, z: 0 },
+      { x: 3, y: -11, z: 0 },
+      { x: 7, y: -10, z: 0, brightness: 1.9 }, // Sargas
+      { x: 9, y: -7, z: 0 },
+      { x: 10, y: -8, z: 0, brightness: 2.2 }, // Shaula (Stinger)
+      { x: 11, y: -7.5, z: 0, brightness: 2.1}, // Lesath (Stinger)
     ],
   },
 ];
