@@ -142,26 +142,44 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     scene.add(stars);
 
     const storyObjects: THREE.Object3D[] = [];
+    const haloTexture = new THREE.TextureLoader().load("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAArVJREFUWEfFlz9oFEEQx/v9zG4tjZ2FjVgpiOAF2K0gWAi1tBBC0Cgq2o2N2oJlIRhYpLARIwUbsFBCSBe0sVIQLIRiEYxtYmFh7e3O3s7OzF+ws9ltz/Y/k+9n/t/sNwD4z+aABM4BEzgnSgG8ALyLeKO6s6q9g/8uQ4AFgH0BtwKkua8bAMfAVeAs8A24FngK3AamgZfAd2BNQAW4FHgGvAfeA5uB/gSoAfeA7cC6BOAA2BEwCbhy/2/AnwJ/ATaBP0C/p8BjwN4I+AcsAZ8C9yJw/bUDHwBvgJvAE+AFsD83AOcDqYAvwI/A2+AGsDWsTwKXA9UAh8B+sBsYAR4E5nwEHAHeBR7FDBz0dwEXgM5Z4BqQc+AasA7cDmz/KLAP+ADsBS4F7gG+Ac+B0d0sHAF4f+i5AZwNfO9zCiwClwA7gb3gLPAk8DTwU0A/a/AZ8B5YFbT+FGAGeBW4WqgN+F1gZ6yvBvAc4GlgBjgD/ASW17YGfG9wR2D0/T3gYyY+Bl4Fdgf+DzwCTgO/Ap8BV4EvgGvAZmBfQJ0vAs8DPwPvgI3ApMAPwNvg8CpwEngP7ANnA48B+8A14A5w/QdAh4BvwLlgTbgFfAQsD+o4MGrM9ZngZeA18J5y/BtwN+B7YDmwEbgIHAf+MWSQ/yXgGvARsB6YBW4GZgO/gM8BD4BnwNfgLPAFcAFYAm4GjoAvgfWAn8ATwAqwdQJYEfhh9n8G2AncCxwCPgZWAz8BDwI/A8cAF4BzwInASwL/QJ78e+B/4AtwS+A/8BWwT0C/G/gK+BfYXwj4H4A/gK2BwQI7Av8AXgO/x/4u4AfgL+AL8AewdY0FdgfWAz8A33wR2BIQBVgTWAz8DcwG3rY5AAAAAElFTkSuQmCC");
+
     storyPositions.forEach(({ story, position }) => {
       const group = new THREE.Group();
       group.userData = { story };
       group.position.copy(position);
       
       story.constellation.forEach((starData: ConstellationStar) => {
+        const starGroup = new THREE.Group();
         const brightness = starData.brightness || 1.0;
-        const size = (0.2 + Math.random() * 0.2) * brightness;
-        const starGeo = new THREE.SphereGeometry(size, 24, 24);
         
-        const starMat = new THREE.MeshBasicMaterial({
-          color: 0xffffff,
+        // Star Core
+        const coreSize = (0.2 + Math.random() * 0.1) * brightness;
+        const coreGeo = new THREE.SphereGeometry(coreSize, 16, 16);
+        const coreMat = new THREE.MeshBasicMaterial({
+          color: 0xfff0d8,
           transparent: true,
-          opacity: Math.min(1.0, (0.7 + Math.random() * 0.3) * brightness),
           blending: THREE.AdditiveBlending,
-         });
+        });
+        const coreMesh = new THREE.Mesh(coreGeo, coreMat);
+        starGroup.add(coreMesh);
+        
+        // Star Halo
+        const haloSize = coreSize * 8;
+        const haloMat = new THREE.SpriteMaterial({
+          map: haloTexture,
+          color: 0xffa050,
+          transparent: true,
+          opacity: 0.3 * brightness,
+          blending: THREE.AdditiveBlending,
+        });
+        const haloSprite = new THREE.Sprite(haloMat);
+        haloSprite.scale.set(haloSize, haloSize, haloSize);
+        starGroup.add(haloSprite);
 
-        const starMesh = new THREE.Mesh(starGeo, starMat);
-        starMesh.position.set(starData.x, starData.y, starData.z);
-        group.add(starMesh);
+        starGroup.position.set(starData.x, starData.y, starData.z);
+        starGroup.userData.initialOpacity = Math.min(1.0, (0.7 + Math.random() * 0.3) * brightness);
+        group.add(starGroup);
       });
 
       const icon = createIcon(story.icon);
@@ -211,13 +229,11 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       // Twinkle effect for constellation stars
       storyObjects.forEach(obj => {
         (obj as THREE.Group).children.forEach(child => {
-           if (child instanceof THREE.Mesh && child.geometry instanceof THREE.SphereGeometry) {
-              const material = child.material as THREE.MeshBasicMaterial;
-              const initialOpacity = material.userData.initialOpacity || material.opacity;
-              if (!material.userData.initialOpacity) {
-                material.userData.initialOpacity = material.opacity;
-              }
-              material.opacity = initialOpacity * (0.5 + 0.5 * Math.sin(time * 2 + child.position.x));
+           if (child instanceof THREE.Group && child.name !== 'story_icon') {
+              const initialOpacity = child.userData.initialOpacity || 0.8;
+              const opacity = initialOpacity * (0.6 + 0.4 * Math.sin(time * 2 + child.position.x));
+              (child.children[0] as THREE.Mesh).material.opacity = opacity;
+              (child.children[1] as THREE.Sprite).material.opacity = opacity * 0.4;
            }
         });
       });
@@ -228,9 +244,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       let foundStory = null;
       storyObjects.forEach(obj => {
           (obj as THREE.Group).children.forEach(child => {
-             if (child instanceof THREE.Mesh && child.name !== 'story_icon') {
-                (child.material as THREE.MeshBasicMaterial).color.set(0xffffff);
-             } else if (child.name === 'story_icon') {
+             if (child.name === 'story_icon') {
                  (child as THREE.Group).children.forEach(c => {
                     if (c instanceof THREE.Mesh) {
                         (c.material as THREE.MeshBasicMaterial).color.set(0xD2B48C);
@@ -250,9 +264,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         if (parentGroup.userData.story) {
             foundStory = parentGroup.userData.story;
             (parentGroup as THREE.Group).children.forEach(child => {
-                if (child instanceof THREE.Mesh && child.name !== 'story_icon') {
-                    (child.material as THREE.MeshBasicMaterial).color.set(0xffffff);
-                } else if (child.name === 'story_icon') {
+                if (child.name === 'story_icon') {
                     (child as THREE.Group).children.forEach(c => {
                         if (c instanceof THREE.Mesh) {
                            (c.material as THREE.MeshBasicMaterial).color.set(0xffffff);
