@@ -46,8 +46,8 @@ export default function Home() {
         {view === "celestial" && !selectedStory && (
           <>
             <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
-              <h1 className="text-5xl font-bold font-headline">The Celestial Map</h1>
-              <p className="mt-4 text-lg text-white/80">Choose a story from the Nakshatras.</p>
+              <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
+              <p className="mt-4 text-lg text-white/80">An interactive storytelling experience through the constellations.</p>
             </div>
             <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
           </>

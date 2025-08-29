@@ -18,7 +18,7 @@ export interface Story {
   constellation: { x: number; y: number; z: number }[];
 }
 
-import { BowIcon } from "@/components/icons/bow-icon";
+import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
 import { ChakraIcon } from "@/components/icons/chakra-icon";
 
 export const stories: Story[] = [
@@ -29,7 +29,7 @@ export const stories: Story[] = [
     summary:
       "An ancient Indian epic which narrates the struggle of the divine prince Rama to rescue his wife Sita from the demon king Ravana. Along with Mahabharata, it forms the Hindu Itihasa.",
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
-    icon: BowIcon,
+    icon: RamaPadukaIcon,
     chapters: [
       {
         title: "A Prince's Virtue",
@@ -53,13 +53,12 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Gemini (Castor & Pollux)
-      { x: -20, y: 15, z: -50 }, 
-      { x: -18, y: 12, z: -52 },
-      { x: -16, y: 9, z: -48 }, 
-      { x: -14, y: 6, z: -51 },
-      { x: -25, y: 20, z: -55 },
-      { x: -23, y: 17, z: -53 },
-      { x: -21, y: 14, z: -56 },
+      { x: -5, y: 10, z: 0 }, { x: 5, y: 10, z: 0 }, // Pollux, Castor
+      { x: -4, y: 8, z: 2 }, { x: 4, y: 8, z: 2 },
+      { x: -6, y: 5, z: -1 }, { x: 6, y: 5, z: -1 },
+      { x: -7, y: 0, z: 1 }, { x: 7, y: 0, z: 1 },
+      { x: -8, y: -5, z: 0 }, { x: 8, y: -5, z: 0 },
+      { x: -9, y: -10, z: -2 }, { x: 9, y: -10, z: -2 },
     ],
   },
   {
@@ -84,16 +83,16 @@ export const stories: Story[] = [
       }
     ],
     constellation: [ // Scorpius
-      { x: 15, y: -10, z: -40 },
-      { x: 18, y: -12, z: -42 },
-      { x: 20, y: -15, z: -45 }, 
-      { x: 22, y: -18, z: -48 },
-      { x: 23, y: -22, z: -50 },
-      { x: 20, y: -25, z: -53 },
-      { x: 18, y: -28, z: -55 },
-      { x: 15, y: -26, z: -52 },
-      { x: 12, y: -24, z: -50 },
-      { x: 10, y: -14, z: -44 },
+      { x: 0, y: 2, z: 0 }, // Antares
+      { x: -2, y: 3, z: 1 }, { x: 2, y: 3, z: 1 }, // Head
+      { x: -5, y: 1, z: -1 },
+      { x: -8, y: -2, z: 0 }, // Body
+      { x: -10, y: -5, z: 2 },
+      { x: -11, y: -8, z: 3 }, // Tail
+      { x: -10, y: -11, z: 1 },
+      { x: -8, y: -13, z: 0 },
+      { x: -6, y: -14, z: -2 }, // Stinger
+      { x: -4, y: -13, z: -1 },
     ],
   },
 ];
