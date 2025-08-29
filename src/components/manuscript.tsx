@@ -10,19 +10,14 @@ import {
   CardTitle,
 } from "./ui/card";
 import { Button } from "./ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
 import type { Story } from "@/lib/stories";
 import { LoaderCircle, BookOpen, ArrowLeft } from "lucide-react";
 import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "./ui/scroll-area";
-import { Textarea } from "./ui/textarea";
+import { KingChessPieceIcon } from "./icons/king-chess-piece";
+import { QueenChessPieceIcon } from "./icons/queen-chess-piece";
+import { cn } from "@/lib/utils";
 
 interface ManuscriptProps {
   story: Story;
@@ -36,8 +31,8 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
-  const handleGeneratePov = async () => {
-    if (!selectedHero) {
+  const handleGeneratePov = async (hero: string) => {
+    if (!hero) {
       toast({
         title: "Select a Character",
         description: "Please choose a character to see their point of view.",
@@ -45,12 +40,13 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
       });
       return;
     }
+    setSelectedHero(hero);
     setIsGenerating(true);
     setPovText("");
     try {
       const result = await narrateFromHeroPOV({
         storySummary: story.summary,
-        heroName: selectedHero,
+        heroName: hero,
       });
       setPovText(result.narration);
     } catch (error) {
@@ -65,6 +61,14 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
     }
   };
 
+  // Assign king/queen to characters, assuming 2-4 characters
+  const characterRoles = story.characters.map((char, index) => {
+      if (index === 0) return { char, role: 'king' as const, Icon: KingChessPieceIcon };
+      if (index === 1) return { char, role: 'queen' as const, Icon: QueenChessPieceIcon };
+      if (index === 2) return { char, role: 'king' as const, Icon: KingChessPieceIcon };
+      return { char, role: 'queen' as const, Icon: QueenChessPieceIcon };
+  })
+
   return (
     <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 relative">
        <Button variant="ghost" size="icon" className="absolute top-4 left-4 z-10" onClick={onBack}>
@@ -78,29 +82,31 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
         </CardHeader>
         <CardContent className="flex-1 min-y-0 overflow-y-auto p-4 md:p-6 space-y-6">
           <div className="bg-primary/5 p-4 rounded-lg border">
-            <h3 className="font-headline text-xl mb-4">Hero's Point of View</h3>
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <Select onValueChange={setSelectedHero} value={selectedHero}>
-                <SelectTrigger className="w-full sm:w-[200px] flex-shrink-0">
-                  <SelectValue placeholder="Select a Character" />
-                </SelectTrigger>
-                <SelectContent>
-                  {story.characters.map((char) => (
-                    <SelectItem key={char} value={char}>
-                      {char}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button onClick={handleGeneratePov} disabled={isGenerating} className="w-full sm:w-auto">
-                {isGenerating ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  "Generate Perspective"
-                )}
-              </Button>
+            <h3 className="font-headline text-xl mb-4 text-center">Whose Point of View?</h3>
+            <div className="flex gap-4 items-center justify-center">
+              {characterRoles.map(({char, Icon, role}) => (
+                <button
+                    key={char}
+                    onClick={() => handleGeneratePov(char)}
+                    disabled={isGenerating}
+                    className={cn(
+                        "flex flex-col items-center gap-2 p-4 rounded-lg transition-all duration-300",
+                        selectedHero === char ? 'bg-accent scale-110' : 'hover:bg-accent/50',
+                    )}
+                >
+                    <Icon className="w-12 h-12 text-primary" />
+                    <span className="font-headline text-sm">{char}</span>
+                </button>
+              ))}
             </div>
-            {povText && (
+
+            {isGenerating && (
+                <div className="flex justify-center items-center h-48 mt-4">
+                    <LoaderCircle className="animate-spin text-primary" size={32} />
+                </div>
+            )}
+            
+            {povText && !isGenerating && (
                 <ScrollArea className="h-48 mt-4">
                   <p className="font-body text-sm whitespace-pre-wrap p-4 bg-background rounded-md">
                     {povText}
