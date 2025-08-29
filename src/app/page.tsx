@@ -15,6 +15,14 @@ export default function Home() {
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
+  React.useEffect(() => {
+    if (view === "celestial") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [view]);
+
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
     setIsTransitioning(true);
