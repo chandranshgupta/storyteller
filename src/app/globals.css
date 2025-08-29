@@ -42,7 +42,7 @@
   }
 
   .dark {
-    --background: 25 35% 10%;
+    --background: 0 0% 0%;
     --foreground: 34 44% 85%;
     --card: 25 35% 15%;
     --card-foreground: 34 44% 85%;
@@ -84,6 +84,5 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23553b28' fill-opacity='0.03' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
   }
 }

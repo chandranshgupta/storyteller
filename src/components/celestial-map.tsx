@@ -22,7 +22,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     
     // Scene
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0a0a1a, 0.001);
+    scene.fog = new THREE.FogExp2(0x000000, 0.001);
 
     // Camera
     const camera = new THREE.PerspectiveCamera(
