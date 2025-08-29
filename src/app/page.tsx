@@ -43,7 +43,7 @@ export default function Home() {
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
         {isTransitioning && <FallingStar />}
 
-        {view === "celestial" && !selectedStory && (
+        {view === "celestial" && (
           <>
             <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
               <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
