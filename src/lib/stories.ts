@@ -64,23 +64,18 @@ export const stories: Story[] = [
       }
     ],
     constellation: [
-        { name: 'castor', x: 8, y: 15, z: 0, brightness: 2.2 },
-        { name: 'pollux', x: -8, y: 13, z: 0, brightness: 2.5 },
-        { name: 'wasat', x: -5, y: 0, z: 0, brightness: 1.5 },
-        { name: 'mekbuda', x: -8, y: -2, z: 0, brightness: 1.8 },
-        { name: 'alhena', x: -6, y: -12, z: 0, brightness: 2.0 },
-        { name: 'mebsuta', x: 13, y: 5, z: 0, brightness: 1.9 },
-        { name: 'propus', x: 10, y: -5, z: 0, brightness: 1.6 },
-        { name: 'tejat', x: 7, y: -10, z: 0, brightness: 1.7 },
-        { name: 'other1', x: 12, y: 1, z: 0 },
-        { name: 'other2', x: 15, y: -1, z: 0 },
-        { name: 'other3', x: 17, y: -2, z: 0 },
-        { name: 'other4', x: 19, y: -3, z: 0 },
+        { name: 'castor', x: 5, y: 14, z: 0, brightness: 2.2 },
+        { name: 'pollux', x: -5, y: 12.5, z: 0, brightness: 2.5 },
+        { name: 'wasat', x: -3.5, y: 0, z: 0, brightness: 1.5 },
+        { name: 'mekbuda', x: -5.5, y: -4, z: 0, brightness: 1.8 },
+        { name: 'alhena', x: -3, y: -12, z: 0, brightness: 2.0 },
+        { name: 'mebsuta', x: 8, y: 4, z: 0, brightness: 1.9 },
+        { name: 'propus', x: 3, y: -6, z: 0, brightness: 1.6 },
+        { name: 'tejat', x: 1, y: -10, z: 0, brightness: 1.7 },
     ],
     constellationLines: [
-        ['castor', 'mebsuta', 'other1', 'propus', 'tejat', 'alhena'],
+        ['castor', 'mebsuta', 'propus', 'tejat', 'alhena'],
         ['pollux', 'wasat', 'mekbuda', 'alhena'],
-        ['mebsuta', 'other1', 'other2', 'other3', 'other4']
     ]
   },
   {
@@ -105,19 +100,18 @@ export const stories: Story[] = [
       }
     ],
     constellation: [
-        { name: 'dschubba', x: 10, y: 7, z: 0, brightness: 2.3 },
-        { name: 'acrab', x: 9.5, y: 4, z: 0, brightness: 2.6 },
-        { name: 'antares', x: 5, y: 1.5, z: 0, brightness: 2.9 },
-        { name: 'wei', x: -2, y: -2, z: 0, brightness: 2.7 },
-        { name: 'girtab', x: -8, y: -6, z: 0, brightness: 2.2 },
-        { name: 'sargas', x: -11, y: -5, z: 0, brightness: 1.9 },
-        { name: 'shaula', x: -13, y: -3, z: 0, brightness: 2.7 },
-        { name: 'lesath', x: -14, y: 0, z: 0, brightness: 2.7 },
-        { name: 'fang', x: 8, y: -1, z: 0 },
-        { name: 'alniyat', x: 3, y: -1.5, z: 0, brightness: 2.0 },
+        { name: 'dschubba', x: 8, y: 5, z: 0, brightness: 2.3 },
+        { name: 'acrab', x: 7.5, y: 2, z: 0, brightness: 2.6 },
+        { name: 'antares', x: 4, y: 0, z: 0, brightness: 2.9 },
+        { name: 'wei', x: -4, y: -5, z: 0, brightness: 2.7 },
+        { name: 'girtab', x: -8, y: -8, z: 0, brightness: 2.2 },
+        { name: 'sargas', x: -9, y: -12, z: 0, brightness: 1.9 },
+        { name: 'shaula', x: -12, y: -10, z: 0, brightness: 2.7 },
+        { name: 'lesath', x: -13, y: -8, z: 0, brightness: 2.7 },
+        { name: 'fang', x: 6, y: -1.5, z: 0 },
     ],
     constellationLines: [
-      ['dschubba', 'acrab', 'fang', 'antares', 'alniyat', 'wei', 'girtab', 'sargas', 'shaula', 'lesath']
+      ['dschubba', 'acrab', 'fang', 'antares', 'wei', 'girtab', 'sargas', 'shaula', 'lesath']
     ]
   },
 ];
