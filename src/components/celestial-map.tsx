@@ -56,6 +56,27 @@ function createIcon(IconComponent: React.ComponentType<{className?: string}>): T
     return group;
 }
 
+function createStarShape(size: number) {
+  const shape = new THREE.Shape();
+  const outerRadius = size;
+  const innerRadius = size * 0.4;
+  const points = 4;
+  for (let i = 0; i < points * 2; i++) {
+    const radius = i % 2 === 0 ? outerRadius : innerRadius;
+    const angle = (i / points) * Math.PI;
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
+    if (i === 0) {
+      shape.moveTo(x, y);
+    } else {
+      shape.lineTo(x, y);
+    }
+  }
+  shape.closePath();
+  return shape;
+}
+
+
 export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [hoveredStory, setHoveredStory] = useState<Story | null>(null);
@@ -158,11 +179,13 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         
         // Star Core
         const coreSize = (0.2 + Math.random() * 0.1) * brightness;
-        const coreGeo = new THREE.SphereGeometry(coreSize, 16, 16);
+        const starShape = createStarShape(coreSize);
+        const coreGeo = new THREE.ShapeGeometry(starShape);
         const coreMat = new THREE.MeshBasicMaterial({
           color: 0xfff0d8,
           transparent: true,
           blending: THREE.AdditiveBlending,
+          side: THREE.DoubleSide
         });
         const coreMesh = new THREE.Mesh(coreGeo, coreMat);
         starGroup.add(coreMesh);
@@ -181,7 +204,8 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         starGroup.add(haloSprite);
 
         starGroup.position.set(starData.x, starData.y, starData.z);
-        starGroup.userData.initialOpacity = Math.min(1.0, (0.7 + Math.random() * 0.3) * brightness);
+        starGroup.userData.initialBrightness = brightness;
+        starGroup.userData.randomOffset = Math.random() * 100;
         group.add(starGroup);
         starGroups.push(starGroup);
 
@@ -293,10 +317,20 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       storyObjects.forEach(obj => {
         (obj as THREE.Group).children.forEach(child => {
            if (child instanceof THREE.Group && child.name !== 'story_icon') {
-              const initialOpacity = child.userData.initialOpacity || 0.8;
-              const opacity = initialOpacity * (0.6 + 0.4 * Math.sin(time * 2 + child.position.x));
-              ((child.children[0] as THREE.Mesh).material as THREE.Material).opacity = opacity;
-              ((child.children[1] as THREE.Sprite).material as THREE.Material).opacity = opacity * 0.4;
+              const baseBrightness = child.userData.initialBrightness || 1.0;
+              const randomOffset = child.userData.randomOffset || 0;
+              
+              // Pulsing scale and opacity
+              const pulse = (Math.sin(time * 1.5 + randomOffset) + 1) / 2; // Varies between 0 and 1
+              const scale = 1 + pulse * 0.4 * baseBrightness;
+              const opacity = 0.7 + pulse * 0.3 * baseBrightness;
+
+              const coreMesh = child.children[0] as THREE.Mesh;
+              const haloSprite = child.children[1] as THREE.Sprite;
+
+              coreMesh.scale.set(scale, scale, scale);
+              (coreMesh.material as THREE.Material).opacity = opacity;
+              (haloSprite.material as THREE.Material).opacity = opacity * 0.5;
            }
         });
       });
