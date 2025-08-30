@@ -74,8 +74,9 @@ export const stories: Story[] = [
         { name: 'tejat', x: 1, y: -10, z: 0, brightness: 1.7 },
     ],
     constellationLines: [
-        ['castor', 'mebsuta', 'propus', 'tejat', 'alhena'],
-        ['pollux', 'wasat', 'mekbuda', 'alhena'],
+        ['castor', 'mebsuta', 'alhena'],
+        ['pollux', 'wasat', 'alhena'],
+        ['propus', 'tejat']
     ]
   },
   {
@@ -100,18 +101,34 @@ export const stories: Story[] = [
       }
     ],
     constellation: [
-        { name: 'dschubba', x: 8, y: 5, z: 0, brightness: 2.3 },
-        { name: 'acrab', x: 7.5, y: 2, z: 0, brightness: 2.6 },
-        { name: 'antares', x: 4, y: 0, z: 0, brightness: 2.9 },
-        { name: 'wei', x: -4, y: -5, z: 0, brightness: 2.7 },
-        { name: 'girtab', x: -8, y: -8, z: 0, brightness: 2.2 },
-        { name: 'sargas', x: -9, y: -12, z: 0, brightness: 1.9 },
-        { name: 'shaula', x: -12, y: -10, z: 0, brightness: 2.7 },
-        { name: 'lesath', x: -13, y: -8, z: 0, brightness: 2.7 },
-        { name: 'fang', x: 6, y: -1.5, z: 0 },
+      // Based on the detailed analysis. Antares is the origin (0,0).
+      // Part 1: The Claws / Head Region
+      { name: 'antares', x: 0, y: 0, z: 0, brightness: 2.9 },
+      { name: 'alniyat', x: -0.5, y: 2, z: 0, brightness: 1.8 },
+      { name: 'dschubba', x: -1, y: 4, z: 0, brightness: 2.3 },
+      { name: 'graffias', x: -3.5, y: 5.5, z: 0, brightness: 2.6 },
+      { name: 'pi_sco', x: 1, y: 4.5, z: 0, brightness: 1.9 }, // The other "claw" star
+      
+      // Part 2: The Body (Torso)
+      { name: 'body1', x: 0.5, y: -2.5, z: 0 },
+      { name: 'body2', x: 1, y: -5, z: 0 },
+      { name: 'body3', x: 1, y: -7, z: 0 },
+      { name: 'tail_anchor', x: 0.5, y: -9, z: 0 },
+
+      // Part 3: The Tail & Stinger (The J-Hook)
+      { name: 'tail1', x: -0.5, y: -11, z: 0 },
+      { name: 'tail2', x: -2, y: -13, z: 0 },
+      { name: 'sargas', x: -4, y: -14, z: 0, brightness: 1.9 },
+      { name: 'tail3', x: -6.5, y: -13, z: 0 },
+      { name: 'tail4', x: -8, y: -11, z: 0 },
+      { name: 'shaula', x: -8.5, y: -9, z: 0, brightness: 2.7 },
     ],
     constellationLines: [
-      ['dschubba', 'acrab', 'fang', 'antares', 'wei', 'girtab', 'sargas', 'shaula', 'lesath']
+      // The Claws
+      ['graffias', 'dschubba', 'alniyat', 'antares'],
+      ['pi_sco', 'dschubba'],
+      // The Body and Tail
+      ['antares', 'body1', 'body2', 'body3', 'tail_anchor', 'tail1', 'tail2', 'sargas', 'tail3', 'tail4', 'shaula']
     ]
   },
 ];
