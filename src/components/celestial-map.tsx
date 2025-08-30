@@ -244,46 +244,54 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
 
     // --- COMET IMPLEMENTATION ---
     const comet = new THREE.Group();
-    
+
     // Comet Head
-    const cometHeadTexture = new THREE.TextureLoader().load("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAAoJJREFUWEfFlz1oFEEQx/v9zG4tjZ2FjVgpiOAF2K0gWAi1tBBC0Cgq2o2N2oJlIRhYpLARIwUbsFBCSBe0sVIQLIRiEYxtYmFh7e3O3s7OzF+ws9ltz/Y/k+9n/t/sNwD4z+aABM4BEzgnSgG8ALyLeKO6s6q9g/8uQ4AFgH0BtwKkua8bAMfAVeAs8A24FngK3AamgZfAd2BNQAW4FHgGvAfeA5uB/gSoAfeA7cC6BOAA2BEwCbhy/2/AnwJ/ATaBP0C/p8BjwN4I+AcsAZ8C9yJw/bUDHwBvgJvAE+AFsD83AOcDqYAvwI/A2+AGsDWsTwKXA9UAh8B+sBsYAR4E5nwEHAHeBR7FDBz0dwEXgM5Z4BqQc+AasA7cDmz/KLAP+ADsBS4F7gG+Ac+B0d0sHAF4f+i5AZwNfO9zCiwClwA7gb3gLPAk8DTwU0A/a/AZ8B5YFbT+FGAGeBW4WqgN+F1gZ6yvBvAc4GlgBjgD/ASW17YGfG9wR2D0/T3gYyY+Bl4Fdgf+DzwCTgO/Ap8BV4EvgGvAZmBfQJ0vAs8DPwPvgI3ApMAPwNvg8CpwEngP7ANnA48B+8A14A5w/QdAh4BvwLlgTbgFfAQsD+o4MGrM9ZngZeA18J5y/BtwN+B7YDmwEbgIHAf+MWSQ/yXgGvARsB6YBW4GZgO/gM8BD4BnwNfgLPAFcAFYAm4GjoAvgfWAn8ATwAqwdQJYEfhh9n8G2AncCxwCPgZWAz8BDwI/A8cAF4BzwInASwL/QJ78e+B/4AtwS+A/8BWwT0C/G/gK+BfYXwj4H4A/gK2BwQI7Av8AXgO/x/4u4AfgL+AL8AewdY0FdgfWAz8A33wR2BIQBVgTWAz8DcwG3rY5AAAAAElFTkSuQmCC");
-    const cometHeadMat = new THREE.SpriteMaterial({
-        map: cometHeadTexture,
-        color: 0xffffff, 
+    const cometHeadGeo = new THREE.SphereGeometry(0.3, 16, 16);
+    const cometHeadMat = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
         transparent: true,
-        blending: THREE.AdditiveBlending,
-        opacity: 0
+        opacity: 0,
+        blending: THREE.AdditiveBlending
     });
-    const cometHead = new THREE.Sprite(cometHeadMat);
-    cometHead.scale.set(8, 8, 1); 
+    const cometHead = new THREE.Mesh(cometHeadGeo, cometHeadMat);
     comet.add(cometHead);
     
     // Comet Tail
-    const tailCanvas = document.createElement('canvas');
-    tailCanvas.width = 2;
-    tailCanvas.height = 256;
-    const tailCtx = tailCanvas.getContext('2d')!;
-    const gradient = tailCtx.createLinearGradient(0, 0, 0, 256);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 0.7)');
-    gradient.addColorStop(0.2, 'rgba(180, 220, 255, 0.4)');
-    gradient.addColorStop(1, 'rgba(180, 220, 255, 0)');
-    tailCtx.fillStyle = gradient;
-    tailCtx.fillRect(0, 0, 2, 256);
-    const tailTexture = new THREE.CanvasTexture(tailCanvas);
+    const tailLength = 20;
+    const tailWidth = 0.8;
+    const segments = 5;
+    const tailVertices = [];
+    for (let i = 0; i < segments; i++) {
+        const progress = i / (segments - 1);
+        const currentWidth = tailWidth * (1 - progress);
+        const yPos = -i * (tailLength / segments);
+        tailVertices.push(currentWidth / 2, yPos, 0);
+        tailVertices.push(-currentWidth / 2, yPos, 0);
+    }
+    const tailIndices = [];
+    for (let i = 0; i < segments - 1; i++) {
+        const p1 = i * 2;
+        const p2 = p1 + 1;
+        const p3 = (i + 1) * 2;
+        const p4 = p3 + 1;
+        tailIndices.push(p1, p2, p3);
+        tailIndices.push(p2, p4, p3);
+    }
 
-    const tailLength = 60;
+    const cometTailGeo = new THREE.BufferGeometry();
+    cometTailGeo.setAttribute('position', new THREE.Float32BufferAttribute(tailVertices, 3));
+    cometTailGeo.setIndex(tailIndices);
+
     const cometTailMat = new THREE.MeshBasicMaterial({
-        map: tailTexture,
+        color: 0xaaaaff,
         transparent: true,
-        blending: THREE.AdditiveBlending,
         opacity: 0,
+        blending: THREE.AdditiveBlending,
         side: THREE.DoubleSide
     });
-    const cometTailGeo = new THREE.PlaneGeometry(2, tailLength);
     const cometTail = new THREE.Mesh(cometTailGeo, cometTailMat);
-    cometTail.position.y = -tailLength / 2; // Position it behind the head
     comet.add(cometTail);
-
+    
     scene.add(comet);
     
     let cometData = {
@@ -294,6 +302,8 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         resetTimeout: -1,
     };
 
+    const clock = new THREE.Clock();
+    
     function launchComet() {
         cometData.active = true;
         cometData.startTime = clock.getElapsedTime();
@@ -348,12 +358,9 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     currentMount.addEventListener("mousemove", onMouseMove);
     currentMount.addEventListener("click", onClick);
 
-    const clock = new THREE.Clock();
-
     const animate = () => {
       requestAnimationFrame(animate);
 
-      const delta = clock.getDelta();
       const time = clock.getElapsedTime();
 
       // Twinkle effect for constellation stars
@@ -395,8 +402,8 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
               }
           }
 
-          (cometHead.material as THREE.SpriteMaterial).opacity = opacity;
-          (cometTail.material as THREE.MeshBasicMaterial).opacity = opacity;
+          cometHeadMat.opacity = opacity;
+          cometTailMat.opacity = opacity * 0.5; // Tail is fainter
           
           if (lifeLived >= cometData.life) {
               cometData.active = false;
