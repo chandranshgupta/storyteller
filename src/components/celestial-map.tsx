@@ -149,7 +149,9 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       group.userData = { story };
       group.position.copy(position);
       
-      const starPoints: THREE.Vector3[] = [];
+      const starMap: { [key: string]: THREE.Vector3 } = {};
+      const starGroups: THREE.Group[] = [];
+
       story.constellation.forEach((starData: ConstellationStar) => {
         const starGroup = new THREE.Group();
         const brightness = starData.brightness || 1.0;
@@ -181,7 +183,11 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         starGroup.position.set(starData.x, starData.y, starData.z);
         starGroup.userData.initialOpacity = Math.min(1.0, (0.7 + Math.random() * 0.3) * brightness);
         group.add(starGroup);
-        starPoints.push(starGroup.position);
+        starGroups.push(starGroup);
+
+        if (starData.name) {
+          starMap[starData.name] = starGroup.position;
+        }
       });
 
       // Add constellation lines
@@ -190,9 +196,17 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         transparent: true,
         opacity: 0.3
       });
-      const lineGeometry = new THREE.BufferGeometry().setFromPoints(starPoints);
-      const line = new THREE.Line(lineGeometry, lineMaterial);
-      group.add(line);
+
+      if (story.constellationLines) {
+        story.constellationLines.forEach(path => {
+           const points = path.map(name => starMap[name]).filter(Boolean);
+           if (points.length > 1) {
+              const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+              const line = new THREE.Line(lineGeometry, lineMaterial);
+              group.add(line);
+           }
+        });
+      }
 
 
       const icon = createIcon(story.icon);
@@ -380,9 +394,3 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     </TooltipProvider>
   );
 }
-
-    
-
-    
-
-    
