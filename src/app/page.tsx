@@ -7,6 +7,7 @@ import { Manuscript } from "@/components/manuscript";
 import { StoryView } from "@/components/story-view";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
+import { RamayanaPuppetShow } from "@/components/ramayana-puppet-show";
 
 type View = "celestial" | "manuscript" | "story";
 
@@ -46,6 +47,22 @@ export default function Home() {
     setView("celestial");
   }
 
+  const renderManuscript = () => {
+    if (!selectedStory) return null;
+
+    if (selectedStory.id === 'ramayana') {
+      return <RamayanaPuppetShow onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
+    }
+
+    return (
+      <Manuscript 
+        story={selectedStory} 
+        onBegin={handleBeginStory}
+        onBack={handleBackToCelestial} 
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
@@ -61,13 +78,7 @@ export default function Home() {
           </>
         )}
         
-        {view === 'manuscript' && selectedStory && (
-          <Manuscript 
-            story={selectedStory} 
-            onBegin={handleBeginStory}
-            onBack={handleBackToCelestial} 
-          />
-        )}
+        {view === 'manuscript' && renderManuscript()}
 
         {view === 'story' && selectedStory && (
           <StoryView story={selectedStory} onBack={handleBackToManuscript} />
