@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -106,7 +107,7 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
                 </div>
             )}
             
-            {povText && !isGenerating && (
+            {povText && (
                 <ScrollArea className="h-48 mt-4">
                   <p className="font-body text-sm whitespace-pre-wrap p-4 bg-background rounded-md">
                     {povText}

@@ -14,8 +14,6 @@ interface CelestialMapProps {
   onSelectStory: (story: Story) => void;
 }
 
-const STAR_COLORS = [0xffffff, 0xffd2a1, 0xa1cfff];
-
 function createIcon(IconComponent: React.ComponentType<{className?: string}>): THREE.Group {
     const iconHTML = ReactDOMServer.renderToString(<IconComponent className="w-8 h-8" />);
     const parser = new DOMParser();

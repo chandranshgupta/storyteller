@@ -6,7 +6,6 @@ export interface Chapter {
   content: (string | { type: 'dialogue'; character: string; line: string })[];
   image: string;
   dataAiHint: string;
-  video?: string; 
 }
 
 export interface ConstellationStar {
@@ -109,7 +108,7 @@ export const stories: Story[] = [
             "On the sacred field of Kurukshetra, two armies of cousins stood arrayed for war. The air was thick with the scent of steel and the sound of conch shells. The Pandava prince, Arjuna, a peerless archer, looked across the battlefield and saw his kinsmen, his teachers, and his friends standing against him.",
             { type: 'dialogue', character: 'Arjuna', line: 'Krishna, my limbs fail me and my mouth is dry. I see no good in killing my own kinsmen in battle.' },
             "His heart filled with despair, he lowered his mighty bow, Gandiva. It was then that his charioteer and divine guide, Lord Krishna, began to impart the timeless wisdom of the Bhagavad Gita.",
-            { type: 'dialogilogue', character: 'Krishna', line: 'It is not the warrior who kills, but duty that commands action. Do your dharma, Arjuna, without attachment to the fruits of your labor.' }
+            { type: 'dialogue', character: 'Krishna', line: 'It is not the warrior who kills, but duty that commands action. Do your dharma, Arjuna, without attachment to the fruits of your labor.' }
         ],
       }
     ],

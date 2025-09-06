@@ -4,7 +4,6 @@
 import * as React from "react";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
-import { preloadVideo } from "@/lib/utils";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -26,16 +25,6 @@ export default function Home() {
   const [view, setView] = React.useState<View>("celestial");
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
-
-  React.useEffect(() => {
-    stories.forEach(story => {
-      story.chapters.forEach(chapter => {
-        if(chapter.video) {
-          preloadVideo(chapter.video);
-        }
-      });
-    });
-  }, []);
 
   React.useEffect(() => {
     if (view === "celestial") {
