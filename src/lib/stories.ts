@@ -26,7 +26,7 @@ export interface Story {
   chapters: Chapter[];
   constellation: ConstellationStar[];
   constellationLines?: string[][]; // Array of paths, each path is an array of star names
-  videos?: string[]; // Optional array of video URLs
+  videos?: {title: string, src: string}[]; // Optional array of video objects
 }
 
 import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
@@ -43,9 +43,16 @@ export const stories: Story[] = [
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
     icon: RamaPadukaIcon,
     videos: [
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4"
+        { title: "The Divine Birth", src: "/videos/0 - The Divine Birth.mp4" },
+        { title: "The Journey to Janakpur", src: "/videos/1 - The Journey to Janakpur.mp4" },
+        { title: "Breaking the Bow", src: "/videos/2 - Breaking the Bow.mp4" },
+        { title: "The Marriage of Rama and Sita", src: "/videos/3 - The Marriage of Rama and Sita.mp4" },
+        { title: "The Exile", src: "/videos/4 - The Exile.mp4" },
+        { title: "The Golden Deer", src: "/videos/5 - The Golden Deer.mp4" },
+        { title: "Sita's Abduction", src: "/videos/6 - Sita's Abduction.mp4" },
+        { title: "Gathering the Army", src: "/videos/7 - Gathering the Army.mp4" },
+        { title: "The Defeat of Ravana", src: "/videos/8 - The Defeat of Ravana.mp4" },
+        { title: "The Triumphant Return to Ayodhya", src: "/videos/9 - The Triumphant Return to Ayodhya.mp4" },
     ],
     chapters: [
       {
