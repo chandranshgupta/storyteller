@@ -66,7 +66,7 @@ export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
             size="icon"
             onClick={handlePlay}
             disabled={isLoading}
-            className="text-foreground/70 hover:text-foreground"
+            className="text-foreground/70 hover:text-foreground inline-block ml-2"
             aria-label="Play narration"
           >
             {isLoading ? (

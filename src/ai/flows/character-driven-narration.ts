@@ -23,35 +23,6 @@ const CharacterDrivenNarrationOutputSchema = z.object({
 export type CharacterDrivenNarrationOutput = z.infer<typeof CharacterDrivenNarrationOutputSchema>;
 
 
-async function toWav(
-  pcmData: Buffer,
-  channels = 1,
-  rate = 24000,
-  sampleWidth = 2
-): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const wav = require('wav');
-    const writer = new wav.Writer({
-      channels,
-      sampleRate: rate,
-      bitDepth: sampleWidth * 8,
-    });
-
-    let bufs: Buffer[] = [];
-    writer.on('error', reject);
-    writer.on('data', (d: Buffer) => {
-      bufs.push(d);
-    });
-    writer.on('end', () => {
-      resolve(Buffer.concat(bufs).toString('base64'));
-    });
-
-    writer.write(pcmData);
-    writer.end();
-  });
-}
-
-
 const narilabsNarrationTool = ai.defineTool(
     {
       name: 'narilabsNarrationTool',
@@ -63,15 +34,14 @@ const narilabsNarrationTool = ai.defineTool(
     },
     async (input) => {
         const {GradioClient} = await import('@gradio/client');
-        const client = await GradioClient.connect("nari-labs/Dia-1.6B", { hf_token: process.env.HUGGING_FACE_TOKEN });
+        const hfToken = process.env.HUGGING_FACE_TOKEN;
+        if (!hfToken) {
+          throw new Error("HUGGING_FACE_TOKEN environment variable not set.");
+        }
+
+        const client = await GradioClient.connect("nari-labs/Dia-1.6B", { hf_token: hfToken });
         const result = await client.predict("/generate_audio", {
             text_input: `[S1] ${input.text}`,
-            max_new_tokens: 3072,
-            cfg_scale: 3,
-            temperature: 1.8,
-            top_p: 0.95,
-            cfg_filter_top_k: 45,
-            speed_factor: 1,
         });
 
         if (typeof result.data[0] === 'object' && result.data[0] !== null && 'url' in result.data[0]) {
