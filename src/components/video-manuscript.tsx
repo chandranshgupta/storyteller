@@ -207,7 +207,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                         >
                             <div className="w-28 h-16 bg-black rounded overflow-hidden relative">
                                 <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
-                                {currentVideoIndex === index && <div className="absolute inset-0 bg-primary/50 flex items-center justify-center text-white">{isPlaying && <PlayIcon />}</div>}
+                                {currentVideoIndex === index && isPlaying && <div className="absolute inset-0 bg-primary/50 flex items-center justify-center text-white"><PlayIcon /></div>}
                             </div>
                             <span className="text-xs font-body text-center text-foreground">{video.title}</span>
                         </button>
