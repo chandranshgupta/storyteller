@@ -57,7 +57,7 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   const videoId = getYouTubeVideoId(currentVideo?.url ?? null);
 
   const updateProgress = () => {
-    if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
+    if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function' && typeof playerRef.current.getDuration === 'function') {
       const currentTime = playerRef.current.getCurrentTime();
       const videoDuration = playerRef.current.getDuration();
       setProgress(currentTime);
@@ -144,7 +144,7 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
     const date = new Date(0);
     date.setSeconds(seconds);
     const timeString = date.toISOString();
-    return timeString.length > 5 ? timeString.substr(14, 5) : '00:00';
+    return timeString.length > 5 && timeString.length >= 19 ? timeString.substr(14, 5) : '00:00';
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
