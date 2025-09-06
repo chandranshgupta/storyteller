@@ -94,9 +94,9 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
                         "flex flex-col items-center gap-2 p-4 rounded-lg transition-all duration-300",
                         selectedHero === char ? 'bg-accent scale-110' : 'hover:bg-accent/50',
                     )}
-                    dangerouslySetInnerHTML={{ __html: icon }}
                 >
-                    <span className="font-headline text-sm pt-14">{char}</span>
+                    <div dangerouslySetInnerHTML={{ __html: icon }} />
+                    <span className="font-headline text-sm pt-14 absolute">{char}</span>
                 </button>
               ))}
             </div>
