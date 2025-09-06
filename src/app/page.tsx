@@ -88,9 +88,9 @@ export default function Home() {
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
         <div className={`w-full h-full transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
-          {view === "celestial" && (
+          {view === "celestial" && !isTransitioning && (
             <>
-              <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
+              <div className="absolute top-1/3 left-0 right-0 text-center text-white z-10 pointer-events-none">
                 <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
                 <p className="mt-4 text-lg text-white/80">An interactive storytelling experience through the constellations.</p>
               </div>
@@ -105,7 +105,16 @@ export default function Home() {
             )}
           </React.Suspense>
         </div>
-        {isTransitioning && <FallingStar onAnimationComplete={handleTransitionComplete} />}
+        {isTransitioning && (
+          <>
+            <div className="absolute top-1/3 left-0 right-0 text-center text-white z-10 pointer-events-none">
+              <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
+              <p className="mt-4 text-lg text-white/80">An interactive storytelling experience through the constellations.</p>
+            </div>
+            <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
+            <FallingStar onAnimationComplete={handleTransitionComplete} />
+          </>
+        )}
       </main>
     </div>
   );
