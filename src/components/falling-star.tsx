@@ -9,51 +9,74 @@ interface FallingStarProps {
 
 export function FallingStar({ onAnimationComplete }: FallingStarProps) {
   useEffect(() => {
-    const timer = setTimeout(onAnimationComplete, 1500); // Must match animation duration
+    const timer = setTimeout(onAnimationComplete, 1500); // Match animation duration
     return () => clearTimeout(timer);
   }, [onAnimationComplete]);
 
   return (
     <>
-      <div className="fixed inset-0 z-50 pointer-events-none">
-        <div className="star" />
+      <div className="fixed inset-0 z-50 pointer-events-none overflow-hidden">
+        <div className="star-container">
+          <div className="star" />
+        </div>
+        <div className="flash" />
       </div>
       <style jsx>{`
-        @keyframes fall {
+        @keyframes zoom-in-and-flare {
           0% {
-            transform: translateX(-100vw) translateY(-20vh) scale(0.5);
-            opacity: 0.8;
+            transform: translateZ(-2000px) scale(0.1);
+            opacity: 0;
           }
-          50% {
+          70% {
+            transform: translateZ(0px) scale(1);
             opacity: 1;
           }
           100% {
-            transform: translateX(100vw) translateY(80vh) scale(1.5);
+            transform: translateZ(50px) scale(50);
             opacity: 0;
           }
         }
+        
+        @keyframes screen-flash {
+          0%, 65% {
+            opacity: 0;
+          }
+          75% {
+            opacity: 0.9;
+          }
+          100% {
+            opacity: 0;
+          }
+        }
+
+        .star-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            perspective: 800px;
+        }
+
         .star {
           position: absolute;
           top: 0;
           left: 0;
-          width: 5px;
-          height: 5px;
-          background: radial-gradient(circle, #fff 20%, rgba(255, 255, 255, 0) 100%);
+          width: 8px;
+          height: 8px;
+          background: radial-gradient(circle, #fff 30%, rgba(255, 255, 255, 0) 100%);
           border-radius: 50%;
           box-shadow: 0 0 15px 5px #fff, 0 0 30px 10px #D2B48C, 0 0 50px 15px #42352A;
-          animation: fall 1.5s ease-in forwards;
+          animation: zoom-in-and-flare 1.5s ease-in forwards;
+          transform-style: preserve-3d;
         }
-        .star::after {
-            content: '';
+        
+        .flash {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 150%;
-            height: 2px;
-            background: linear-gradient(to right, rgba(255,255,255,0.8), rgba(255,255,255,0));
-            transform-origin: left;
-            transform: rotate(-45deg) translateX(-50%);
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #FAF8F2; /* Manuscript background color */
+            animation: screen-flash 1.5s ease-out forwards;
         }
       `}</style>
     </>
