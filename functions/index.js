@@ -14,7 +14,12 @@ async function getHfToken() {
     return version.payload.data.toString("utf8");
 }
 
-exports.generateNarration = functions.https.onCall(async (data, context) => {
+exports.generateNarration = functions
+    .runWith({ 
+        timeoutSeconds: 300, // Allow up to 5 minutes to run
+        memory: "1GB"        // Allocate 1GB of memory
+    })
+    .https.onCall(async (data, context) => {
     const text_input = data.text_to_speak;
     if (!text_input) {
         throw new functions.https.HttpsError('invalid-argument', 'The function must be called with "text_to_speak".');
@@ -26,8 +31,9 @@ exports.generateNarration = functions.https.onCall(async (data, context) => {
         
         const result = await gradioClient.predict("/generate_audio", {
             text_input: `[S1] ${text_input}`,
-            // audio_prompt_input: null, // Gradio client expects a value, handle_file might be needed if it were required
-            // transcription_input: null,
+            temperature: 1.2, 
+            speed_factor: 0.9,
+            cfg_scale: 3, 
         });
 
         // The result contains the URL of the generated audio file.
