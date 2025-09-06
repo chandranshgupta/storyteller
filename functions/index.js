@@ -31,8 +31,10 @@ exports.generateNarration = functions
         
         const result = await gradioClient.predict("/generate_audio", {
             text_input: `[S1] ${text_input}`,
-            temperature: 1.2, 
-            speed_factor: 0.9,
+            audio_prompt_input: null, // Required by API, pass null for no prompt
+            transcription_input: "", // Required by API, pass empty string
+            temperature: 1.8,
+            speed_factor: 1,
             cfg_scale: 3, 
         });
 
