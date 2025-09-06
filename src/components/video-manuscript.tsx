@@ -16,6 +16,7 @@ interface VideoManuscriptProps {
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
     const videos = story.videos || [];
     const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
+    
     const [isPlaying, setIsPlaying] = React.useState(false);
     const [isMuted, setIsMuted] = React.useState(true); // Start muted for autoplay
     const [progress, setProgress] = React.useState(0);
@@ -32,7 +33,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
     const togglePlay = () => {
         if (videoRef.current) {
             if (videoRef.current.paused || videoRef.current.ended) {
-                // First interaction unmutes
+                // First interaction by user unmutes
                 if (isMuted) setIsMuted(false); 
                 videoRef.current.play();
             } else {
@@ -47,14 +48,23 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         if (videoRef.current) {
             videoRef.current.volume = newVolume;
             videoRef.current.muted = newVolume === 0;
+            if(newVolume > 0 && isMuted) setIsMuted(false);
         }
     };
 
     const toggleMute = () => {
-        setIsMuted(!isMuted);
-        if (videoRef.current) {
-            videoRef.current.muted = !isMuted;
-        }
+        setIsMuted(prevMuted => {
+            const newMuted = !prevMuted;
+            if (videoRef.current) {
+                videoRef.current.muted = newMuted;
+                // If unmuting and volume is 0, set volume to 1
+                if (!newMuted && videoRef.current.volume === 0) {
+                    videoRef.current.volume = 1;
+                    setVolume(1);
+                }
+            }
+            return newMuted;
+        });
     };
 
     const handleProgressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +85,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
     };
     
     const formatTime = (timeInSeconds: number) => {
-        if (isNaN(timeInSeconds)) return "00:00";
+        if (isNaN(timeInSeconds) || timeInSeconds === 0) return "00:00";
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
@@ -85,7 +95,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
     const onPlay = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => {
-        if(videoRef.current) {
+        if(videoRef.current?.duration) {
             setProgress((videoRef.current.currentTime / videoRef.current.duration) * 100);
             setCurrentTime(videoRef.current.currentTime);
         }
@@ -104,10 +114,14 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         }
     };
     
+    // --- Effects ---
     // Effect to play new video when index changes
     React.useEffect(() => {
         if(videoRef.current) {
-           videoRef.current.play().catch(e => console.log("Autoplay blocked, waiting for user interaction."));
+           videoRef.current.play().catch(e => {
+            // Autoplay was blocked, this is expected until user interaction
+            setIsPlaying(false);
+           });
         }
     }, [currentVideoIndex]);
 
@@ -117,6 +131,13 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
             videoRef.current.muted = isMuted;
         }
     }, [isMuted]);
+
+
+    const handleThumbnailClick = (index: number) => {
+        // User interaction, we can now unmute safely
+        if(isMuted) setIsMuted(false);
+        setCurrentVideoIndex(index);
+    }
 
     return (
         <div className="manuscript-container">
@@ -128,7 +149,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
             <div ref={playerRef} className="video-player">
                 <video
                     ref={videoRef}
-                    id="story-video"
+                    key={currentVideo?.src} // Key helps React re-render the element
                     src={currentVideo?.src}
                     poster={currentVideo?.thumbnail}
                     autoPlay
@@ -143,24 +164,24 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                 ></video>
 
                 <div className="player-controls">
-                    <button id="play-pause-btn" title={isPlaying ? "Pause" : "Play"} onClick={togglePlay}>
-                        <svg id="play-icon" viewBox="0 0 24 24" style={{ display: !isPlaying ? 'block' : 'none' }}><path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg>
-                        <svg id="pause-icon" viewBox="0 0 24 24" style={{ display: isPlaying ? 'block' : 'none' }}><path fill="currentColor" d="M14,19H18V5H14M6,19H10V5H6V19Z" /></svg>
+                    <button title={isPlaying ? "Pause" : "Play"} onClick={togglePlay}>
+                        <svg viewBox="0 0 24 24" style={{ display: !isPlaying ? 'block' : 'none' }}><path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg>
+                        <svg viewBox="0 0 24 24" style={{ display: isPlaying ? 'block' : 'none' }}><path fill="currentColor" d="M14,19H18V5H14M6,19H10V5H6V19Z" /></svg>
                     </button>
                     
-                    <input id="progress-bar" type="range" className="progress-bar" min="0" max="100" value={progress || 0} step="0.1" onChange={handleProgressChange} />
+                    <input type="range" className="progress-bar" min="0" max="100" value={progress || 0} step="0.1" onChange={handleProgressChange} />
                     
-                    <div id="time-display" className="time-display">{formatTime(currentTime)} / {formatTime(duration)}</div>
+                    <div className="time-display">{formatTime(currentTime)} / {formatTime(duration)}</div>
 
                     <div className="volume-controls">
-                        <button id="mute-btn" title={isMuted ? "Unmute" : "Mute"} onClick={toggleMute}>
-                           <svg id="volume-high-icon" viewBox="0 0 24 24" style={{ display: !isMuted ? 'block' : 'none' }}><path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M3,9V15H7L12,20V4L7,9H3Z" /></svg>
-                            <svg id="volume-muted-icon" viewBox="0 0 24 24" style={{ display: isMuted ? 'block' : 'none' }}><path fill="currentColor" d="M12,4L7,9H3V15H7L12,20V4M21,12C21,16.28 18,19.86 14,20.77V18.7C16.89,17.84 19,15.17 19,12C19,8.83 16.89,6.15 14,5.29V3.23C18,4.14 21,7.72 21,12Z" /></svg>
+                        <button title={isMuted ? "Unmute" : "Mute"} onClick={toggleMute}>
+                           <svg viewBox="0 0 24 24" style={{ display: !isMuted ? 'block' : 'none' }}><path fill="currentColor" d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M3,9V15H7L12,20V4L7,9H3Z" /></svg>
+                           <svg viewBox="0 0 24 24" style={{ display: isMuted ? 'block' : 'none' }}><path fill="currentColor" d="M12,4L7,9H3V15H7L12,20V4M21,12C21,16.28 18,19.86 14,20.77V18.7C16.89,17.84 19,15.17 19,12C19,8.83 16.89,6.15 14,5.29V3.23C18,4.14 21,7.72 21,12Z" /></svg>
                         </button>
-                        <input id="volume-slider" type="range" min="0" max="1" value={isMuted ? 0 : volume} step="0.01" onChange={handleVolumeChange} />
+                        <input type="range" min="0" max="1" value={isMuted ? 0 : volume} step="0.01" onChange={handleVolumeChange} />
                     </div>
 
-                    <button id="fullscreen-btn" title="Fullscreen" onClick={toggleFullscreen}>
+                    <button title="Fullscreen" onClick={toggleFullscreen}>
                         <svg viewBox="0 0 24 24"><path fill="currentColor" d="M7,14H5V19H10V17H7V14M5,10H7V7H10V5H5V10M17,17H14V19H19V14H17V17M14,5V7H17V10H19V5H14Z" /></svg>
                     </button>
                 </div>
@@ -173,10 +194,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     <div 
                         key={video.src} 
                         className={cn("thumbnail", currentVideoIndex === index && "active")}
-                        onClick={() => {
-                            setCurrentVideoIndex(index);
-                            setIsMuted(false); // Unmute on selection
-                        }}
+                        onClick={() => handleThumbnailClick(index)}
                     >
                         <img src={video.thumbnail} alt={video.title} />
                         <span>{video.title}</span>
@@ -354,5 +372,3 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         </div>
     );
 }
-
-    
