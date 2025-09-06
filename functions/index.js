@@ -1,9 +1,10 @@
+
 const functions = require("firebase-functions");
 const { Client } = require("@gradio/client");
 const { SecretManagerServiceClient } = require('@google-cloud/secret-manager');
 
 // Your Google Cloud Project ID. Find this in your Firebase project settings.
-const PROJECT_ID = "your-gcp-project-id"; 
+const PROJECT_ID = "nakshatra-narratives"; 
 
 // Helper function to get the secret token securely
 async function getHfToken() {
