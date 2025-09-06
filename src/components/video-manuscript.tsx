@@ -4,7 +4,7 @@
 import * as React from "react";
 import type { Story } from "@/lib/stories";
 import { Button } from "./ui/button";
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, PlayCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VideoManuscriptProps {
@@ -15,6 +15,7 @@ interface VideoManuscriptProps {
 
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
     const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
+    const [isPlaying, setIsPlaying] = React.useState(false);
     const videoRef = React.useRef<HTMLVideoElement>(null);
     const videos = story.videos || [];
 
@@ -22,19 +23,23 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         if (currentVideoIndex < videos.length - 1) {
             setCurrentVideoIndex(currentVideoIndex + 1);
         } else {
-            // Optional: Loop back to the beginning or show an end screen
             console.log("The epic has concluded.");
-            // setCurrentVideoIndex(0); // Uncomment to loop
+            setIsPlaying(false); // End playback
         }
     };
     
     React.useEffect(() => {
-        if(videoRef.current) {
+        if(isPlaying && videoRef.current) {
             videoRef.current.play().catch(error => {
                 console.error("Video play failed:", error);
+                setIsPlaying(false); // Stop if there's an error
             });
         }
-    }, [currentVideoIndex]);
+    }, [currentVideoIndex, isPlaying]);
+
+    const startPlayback = () => {
+        setIsPlaying(true);
+    }
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 relative bg-[#f5f5dc] animate-fade-in">
@@ -50,13 +55,20 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     <video
                         ref={videoRef}
                         key={currentVideoIndex}
-                        src={videos[currentVideoIndex]?.src}
-                        autoPlay
-                        muted
+                        src={isPlaying ? videos[currentVideoIndex]?.src : ""}
                         onEnded={handleVideoEnded}
                         playsInline
                         className="content-video"
                     ></video>
+                    {!isPlaying && (
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center z-10">
+                            <h2 className="font-headline text-5xl text-white mb-4">{story.title}</h2>
+                           <Button size="lg" variant="outline" className="bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={startPlayback}>
+                               <PlayCircle className="mr-2" />
+                               Begin the Epic
+                           </Button>
+                        </div>
+                    )}
                     <div className="light-overlay"></div>
                 </div>
             </div>
@@ -67,10 +79,13 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     {videos.map((video, index) => (
                         <button 
                             key={index} 
-                            onClick={() => setCurrentVideoIndex(index)}
+                            onClick={() => {
+                                setCurrentVideoIndex(index)
+                                if (!isPlaying) setIsPlaying(true);
+                            }}
                             className={cn(
                                 "flex flex-col items-center gap-2 p-2 rounded-md hover:bg-accent cursor-pointer border-2 flex-shrink-0 w-32",
-                                currentVideoIndex === index ? "border-primary" : "border-transparent"
+                                isPlaying && currentVideoIndex === index ? "border-primary" : "border-transparent"
                             )}
                         >
                             <div className="w-28 h-16 bg-black rounded overflow-hidden">
