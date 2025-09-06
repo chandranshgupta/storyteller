@@ -82,6 +82,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
     };
 
     const formatTime = (timeInSeconds: number) => {
+        if (isNaN(timeInSeconds)) return "00:00";
         const minutes = Math.floor(timeInSeconds / 60);
         const seconds = Math.floor(timeInSeconds % 60);
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
@@ -173,7 +174,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
 
                         <div className="volume-controls">
                             <button onClick={toggleMute} title={isMuted ? "Unmute" : "Mute"}>
-                                {isMuted ? <VolumeMutedIcon /> : <VolumeHighIcon />}
+                                {isMuted || volume === 0 ? <VolumeMutedIcon /> : <VolumeHighIcon />}
                             </button>
                             <input 
                               type="range" 
