@@ -2,10 +2,11 @@
 import { useRef, useEffect, useState } from 'react';
 import type { Story, Chapter } from "@/lib/stories";
 import { Button } from "./ui/button";
-import { ArrowLeft, User, MessageSquare } from "lucide-react";
+import { ArrowLeft, User } from "lucide-react";
 import Image from 'next/image';
 import { DialoguePlayer } from './dialogue-player';
 import { Card, CardContent } from './ui/card';
+import { MessageSquareText } from 'lucide-react';
 
 interface StoryViewProps {
   story: Story;
@@ -79,7 +80,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
                             <p className="font-headline text-sm mt-1">{item.character}</p>
                           </div>
                           <div className="flex-1 italic pt-1">
-                            <MessageSquare className="inline-block w-4 h-4 mr-2 text-primary/50" />
+                            <MessageSquareText className="inline-block w-4 h-4 mr-2 text-primary/50" />
                             "{item.line}"
                           </div>
                           <DialoguePlayer character={item.character} text={item.line} />

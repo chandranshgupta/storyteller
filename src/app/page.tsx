@@ -2,12 +2,26 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { CelestialMap } from "@/components/celestial-map";
-import { Manuscript } from "@/components/manuscript";
-import { StoryView } from "@/components/story-view";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
-import { VideoManuscript } from "@/components/video-manuscript";
+import { preloadVideo } from "@/lib/utils";
+import dynamic from 'next/dynamic';
+import { Skeleton } from "@/components/ui/skeleton";
+
+const CelestialMap = dynamic(() => import('@/components/celestial-map').then(mod => mod.CelestialMap), { 
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full bg-black" />
+});
+const Manuscript = dynamic(() => import('@/components/manuscript').then(mod => mod.Manuscript), {
+  loading: () => <Skeleton className="w-full h-full" />
+});
+const VideoManuscript = dynamic(() => import('@/components/video-manuscript').then(mod => mod.VideoManuscript), {
+  loading: () => <Skeleton className="w-full h-full" />
+});
+const StoryView = dynamic(() => import('@/components/story-view').then(mod => mod.StoryView), {
+  loading: () => <Skeleton className="w-full h-full" />
+});
+
 
 type View = "celestial" | "manuscript" | "story";
 
@@ -15,6 +29,18 @@ export default function Home() {
   const [view, setView] = React.useState<View>("celestial");
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
+
+  // Preload videos when the component mounts
+  React.useEffect(() => {
+    const ramayanaStory = stories.find(s => s.id === 'ramayana');
+    if (ramayanaStory && ramayanaStory.videos) {
+      // Preload the first 2-3 videos to ensure a quick start
+      ramayanaStory.videos.slice(0, 3).forEach(video => {
+        preloadVideo(video.src);
+      });
+    }
+  }, []);
+
 
   React.useEffect(() => {
     if (view === "celestial") {
@@ -78,11 +104,12 @@ export default function Home() {
           </>
         )}
         
-        {view === 'manuscript' && renderManuscript()}
-
-        {view === 'story' && selectedStory && (
-          <StoryView story={selectedStory} onBack={handleBackToManuscript} />
-        )}
+        <React.Suspense fallback={<Skeleton className="w-full h-full" />}>
+          {view === 'manuscript' && renderManuscript()}
+          {view === 'story' && selectedStory && (
+            <StoryView story={selectedStory} onBack={handleBackToManuscript} />
+          )}
+        </React.Suspense>
       </main>
     </div>
   );
