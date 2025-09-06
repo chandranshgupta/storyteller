@@ -6,6 +6,7 @@ import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
 import dynamic from 'next/dynamic';
 import { Skeleton } from "@/components/ui/skeleton";
+import { FallingStar } from "@/components/falling-star";
 
 const CelestialMap = dynamic(() => import('@/components/celestial-map').then(mod => mod.CelestialMap), { 
   ssr: false,
@@ -24,6 +25,7 @@ type View = "celestial" | "manuscript" | "story";
 export default function Home() {
   const [view, setView] = React.useState<View>("celestial");
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
+  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   React.useEffect(() => {
     if (view === "celestial") {
@@ -35,6 +37,11 @@ export default function Home() {
 
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
+    setIsTransitioning(true);
+  };
+  
+  const handleTransitionComplete = () => {
+    setIsTransitioning(false);
     setView("manuscript");
   };
 
@@ -65,6 +72,7 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
+        {isTransitioning && <FallingStar onAnimationComplete={handleTransitionComplete} />}
         {view === "celestial" && (
           <>
             <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
