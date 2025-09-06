@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
@@ -16,6 +17,11 @@ export function preloadVideo(src: string) {
     return;
   }
   
+  const existingLink = document.querySelector(`link[rel="preload"][href="${src}"]`);
+  if (existingLink) {
+    return;
+  }
+
   const link = document.createElement('link');
   link.rel = 'preload';
   link.as = 'video';

@@ -24,7 +24,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
             setCurrentVideoIndex(currentVideoIndex + 1);
         } else {
             console.log("The epic has concluded.");
-            setIsPlaying(false); // End playback
+            setIsPlaying(false);
         }
     };
     
@@ -32,14 +32,28 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         if(isPlaying && videoRef.current) {
             videoRef.current.play().catch(error => {
                 console.error("Video play failed:", error);
-                setIsPlaying(false); // Stop if there's an error
+                setIsPlaying(false);
             });
         }
     }, [currentVideoIndex, isPlaying]);
 
     const startPlayback = () => {
-        setIsPlaying(true);
+        if (videoRef.current) {
+            videoRef.current.play().then(() => {
+                setIsPlaying(true);
+            }).catch(error => {
+                console.error("Video playback failed to start:", error);
+            });
+        }
     }
+
+    const selectScene = (index: number) => {
+        setCurrentVideoIndex(index);
+        if (!isPlaying) {
+             setTimeout(() => startPlayback(), 0);
+        }
+    }
+
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 relative bg-[#f5f5dc] animate-fade-in">
@@ -55,18 +69,22 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     <video
                         ref={videoRef}
                         key={currentVideoIndex}
-                        src={isPlaying ? videos[currentVideoIndex]?.src : ""}
+                        src={videos[currentVideoIndex]?.src}
                         onEnded={handleVideoEnded}
                         playsInline
-                        className="content-video"
+                        className={cn("content-video", isPlaying ? "opacity-100" : "opacity-0")}
                     ></video>
                     {!isPlaying && (
                         <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center z-10">
-                            <h2 className="font-headline text-5xl text-white mb-4">{story.title}</h2>
-                           <Button size="lg" variant="outline" className="bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={startPlayback}>
-                               <PlayCircle className="mr-2" />
-                               Begin the Epic
-                           </Button>
+                             <div className="absolute inset-0 bg-cover bg-center" style={{backgroundImage: `url(${story.videos?.[0]?.thumbnail})`}}></div>
+                             <div className="absolute inset-0 bg-black/50"></div>
+                            <div className="relative text-center">
+                                <h2 className="font-headline text-5xl text-white mb-4">{story.title}</h2>
+                                <Button size="lg" variant="outline" className="bg-transparent text-white hover:bg-white/10 hover:text-white" onClick={startPlayback}>
+                                    <PlayCircle className="mr-2" />
+                                    Begin the Epic
+                                </Button>
+                            </div>
                         </div>
                     )}
                     <div className="light-overlay"></div>
@@ -79,17 +97,15 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     {videos.map((video, index) => (
                         <button 
                             key={index} 
-                            onClick={() => {
-                                setCurrentVideoIndex(index)
-                                if (!isPlaying) setIsPlaying(true);
-                            }}
+                            onClick={() => selectScene(index)}
                             className={cn(
                                 "flex flex-col items-center gap-2 p-2 rounded-md hover:bg-accent cursor-pointer border-2 flex-shrink-0 w-32",
                                 isPlaying && currentVideoIndex === index ? "border-primary" : "border-transparent"
                             )}
                         >
-                            <div className="w-28 h-16 bg-black rounded overflow-hidden">
-                                <video className="w-full h-full object-cover" src={video.src} preload="metadata" muted playsInline />
+                            <div className="w-28 h-16 bg-black rounded overflow-hidden relative">
+                                <img src={video.thumbnail} alt={video.title} className="w-full h-full object-cover" />
+                                {isPlaying && currentVideoIndex === index && <div className="absolute inset-0 bg-primary/50"></div>}
                             </div>
                             <span className="text-xs font-body text-center text-foreground">{video.title}</span>
                         </button>
@@ -140,6 +156,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     height: 100%;
                     display: block;
                     object-fit: cover;
+                    transition: opacity 0.3s;
                 }
 
                 .light-overlay {
