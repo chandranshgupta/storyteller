@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { characterDrivenNarration } from "@/ai/flows/character-driven-narration";
 import { useToast } from "@/hooks/use-toast";
 import { Volume2, LoaderCircle } from "lucide-react";
 import { Button } from "./ui/button";
@@ -12,33 +11,37 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
+import { functions } from "@/lib/firebase";
+import { httpsCallable } from "firebase/functions";
 
 interface DialoguePlayerProps {
   character: string;
   text: string;
 }
 
+const generateNarration = httpsCallable(functions, 'generateNarration');
+
 export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const { toast } = useToast();
 
   const handlePlay = async () => {
     if (isLoading) return;
     
-    if (audioUrl) {
-      audioRef.current?.play();
+    // If we already have the URL, just play it.
+    if (audioUrl && audioRef.current) {
+      audioRef.current.play();
       return;
     }
 
     setIsLoading(true);
     try {
-      const result = await characterDrivenNarration({
-        characterName: character,
-        dialogue: text,
-      });
-      setAudioUrl(result.media);
+      // Securely call our Firebase Function
+      const result: any = await generateNarration({ text_to_speak: text });
+      const newAudioUrl = result.data.audioUrl;
+      setAudioUrl(newAudioUrl);
     } catch (error) {
       console.error("Narration failed:", error);
       toast({
@@ -51,9 +54,15 @@ export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
     }
   };
 
+  // Effect to play audio once the URL is set
   useEffect(() => {
-    if (audioUrl && audioRef.current) {
-      audioRef.current.play().catch(console.error);
+    if (audioUrl) {
+        if (!audioRef.current) {
+            audioRef.current = new Audio(audioUrl);
+        } else {
+            audioRef.current.src = audioUrl;
+        }
+        audioRef.current.play().catch(console.error);
     }
   }, [audioUrl]);
 
@@ -80,7 +89,7 @@ export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
           <p>Hear narration</p>
         </TooltipContent>
       </Tooltip>
-      {audioUrl && <audio ref={audioRef} src={audioUrl} hidden />}
+      {/* The Audio element is now created programmatically and not rendered */}
     </TooltipProvider>
   );
 }
