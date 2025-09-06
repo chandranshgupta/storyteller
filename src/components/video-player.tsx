@@ -15,7 +15,7 @@ interface VideoPlayerProps {
 }
 
 export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
-  const [currentVideo, setCurrentVideo] = useState(story.videos?.[4] ?? null);
+  const [currentVideo, setCurrentVideo] = useState(story.videos?.[0] ?? null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [duration, setDuration] = useState(0);
