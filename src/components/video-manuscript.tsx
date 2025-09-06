@@ -7,39 +7,43 @@ import { Button } from "./ui/button";
 import { ArrowLeft, BookOpen } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+interface VideoManuscriptProps {
+    story: Story;
+    onBegin: () => void;
+    onBack: () => void;
+}
+
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
-    const [currentVideo, setCurrentVideo] = React.useState<VideoAsset | null>(story.videos ? story.videos[0] : null);
-    const videoRef = React.useRef<HTMLVideoElement>(null);
     const videos = story.videos || [];
+    const [currentVideo, setCurrentVideo] = React.useState<VideoAsset | null>(videos.length > 0 ? videos[0] : null);
+    const videoRef = React.useRef<HTMLVideoElement>(null);
+
+    React.useEffect(() => {
+        // Automatically start the first video, muted.
+        if (videoRef.current && currentVideo?.src === videos[0]?.src) {
+            videoRef.current.src = videos[0].src;
+            videoRef.current.muted = true;
+            videoRef.current.play().catch(e => console.error("Initial autoplay failed:", e));
+        }
+    }, [videos, currentVideo]);
 
     const handleThumbnailClick = (video: VideoAsset) => {
         if (videoRef.current) {
             videoRef.current.muted = false; // Unmute on user interaction
+            videoRef.current.src = video.src;
+            videoRef.current.play().catch(e => console.error("User-initiated play failed:", e));
         }
         setCurrentVideo(video);
     };
 
-    React.useEffect(() => {
-        const videoElement = videoRef.current;
-        if (!videoElement || !currentVideo) return;
-
-        videoElement.src = currentVideo.src;
-        videoElement.load();
-        videoElement.play().catch(error => {
-            console.error("Video play failed:", error);
-            // This error is expected on initial load before user interaction.
-            // The video is muted, so it should autoplay where allowed.
-        });
-
-    }, [currentVideo]);
-
     const handleVideoEnded = () => {
         const currentIndex = videos.findIndex(v => v.src === currentVideo?.src);
         if (currentIndex !== -1 && currentIndex < videos.length - 1) {
-            setCurrentVideo(videos[currentIndex + 1]);
+            const nextVideo = videos[currentIndex + 1];
+            handleThumbnailClick(nextVideo); // Use the same logic to play the next video
         } else {
             console.log("The epic has concluded.");
-            // Optional: Loop back or show an end screen
+            // Optional: Loop or show end screen
         }
     };
     
@@ -54,7 +58,6 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                 <video 
                     ref={videoRef} 
                     playsInline 
-                    muted  // Start muted to allow autoplay
                     onEnded={handleVideoEnded}
                     className="content-video"
                 />
@@ -169,10 +172,4 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
             `}</style>
         </div>
     );
-}
-
-interface VideoManuscriptProps {
-    story: Story;
-    onBegin: () => void;
-    onBack: () => void;
 }
