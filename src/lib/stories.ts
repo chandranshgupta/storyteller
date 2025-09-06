@@ -12,7 +12,6 @@ export interface ConstellationStar {
   name?: string; // Optional name to reference for lines
   x: number;
   y: number;
-  z: number;
   brightness?: number; // Optional brightness multiplier (e.g., 1.5 for brighter)
 }
 
@@ -65,21 +64,21 @@ export const stories: Story[] = [
     ],
     constellation: [
       // Pollux Figure (Southern/Right Twin)
-      { name: 'pollux', x: -5, y: 12.5, z: 0, brightness: 2.5 },
-      { name: 'pollux_shoulder', x: -3.5, y: 8, z: 0 },
-      { name: 'wasat', x: -3.5, y: 0, z: 0, brightness: 1.5 },
-      { name: 'mekbuda', x: -5.5, y: -4, z: 0, brightness: 1.8 },
-      { name: 'alhena', x: -3, y: -12, z: 0, brightness: 2.0 },
+      { name: 'pollux', x: -5, y: 12.5, brightness: 2.5 },
+      { name: 'pollux_shoulder', x: -3.5, y: 8 },
+      { name: 'wasat', x: -3.5, y: 0, brightness: 1.5 },
+      { name: 'mekbuda', x: -5.5, y: -4, brightness: 1.8 },
+      { name: 'alhena', x: -3, y: -12, brightness: 2.0 },
       
       // Castor Figure (Northern/Left Twin)
-      { name: 'castor', x: 5, y: 14, z: 0, brightness: 2.2 },
-      { name: 'castor_shoulder', x: 4, y: 9.5, z: 0 },
-      { name: 'mebsuta', x: 8, y: 4, z: 0, brightness: 1.9 },
-      { name: 'propus', x: 3, y: -6, z: 0, brightness: 1.6 },
-      { name: 'tejat', x: 1, y: -10, z: 0, brightness: 1.7 },
+      { name: 'castor', x: 5, y: 14, brightness: 2.2 },
+      { name: 'castor_shoulder', x: 4, y: 9.5 },
+      { name: 'mebsuta', x: 8, y: 4, brightness: 1.9 },
+      { name: 'propus', x: 3, y: -6, brightness: 1.6 },
+      { name: 'tejat', x: 1, y: -10, brightness: 1.7 },
       
       // Shared node
-      { name: 'arm_link_point', x: 0, y: 7.5, z: 0 },
+      { name: 'arm_link_point', x: 0, y: 7.5 },
     ],
     constellationLines: [
         // Pollux's body and leg
@@ -114,21 +113,21 @@ export const stories: Story[] = [
     ],
     constellation: [
       // Anchor Node
-      { name: 'antares', x: 0, y: 0, z: 0, brightness: 2.9 },
+      { name: 'antares', x: 0, y: 0, brightness: 2.9 },
       // Claws/Head
-      { name: 'alniyat', x: -1.5, y: 2.5, z: 0, brightness: 1.8 },
-      { name: 'dschubba', x: -2.5, y: 5.5, z: 0, brightness: 2.3 },
-      { name: 'graffias', x: -4, y: 6.5, z: 0, brightness: 2.6 },
-      { name: 'pi_sco', x: 0.5, y: 5, z: 0, brightness: 1.9 },
+      { name: 'alniyat', x: -1.5, y: 2.5, brightness: 1.8 },
+      { name: 'dschubba', x: -2.5, y: 5.5, brightness: 2.3 },
+      { name: 'graffias', x: -4, y: 6.5, brightness: 2.6 },
+      { name: 'pi_sco', x: 0.5, y: 5, brightness: 1.9 },
       // Body
-      { name: 'body1', x: 1.5, y: -2.5, z: 0 },
-      { name: 'body2', x: 2, y: -5, z: 0 },
-      { name: 'tail_anchor', x: 2, y: -7.5, z: 0 },
+      { name: 'body1', x: 1.5, y: -2.5 },
+      { name: 'body2', x: 2, y: -5 },
+      { name: 'tail_anchor', x: 2, y: -7.5 },
       // Tail & Stinger
-      { name: 'tail1', x: 1, y: -10, z: 0 },
-      { name: 'sargas', x: -3.5, y: -14, z: 0, brightness: 1.9 },
-      { name: 'tail2', x: -5.5, y: -13, z: 0 },
-      { name: 'shaula', x: -7.5, y: -8.5, z: 0, brightness: 2.7 },
+      { name: 'tail1', x: 1, y: -10 },
+      { name: 'sargas', x: -3.5, y: -14, brightness: 1.9 },
+      { name: 'tail2', x: -5.5, y: -13 },
+      { name: 'shaula', x: -7.5, y: -8.5, brightness: 2.7 },
     ],
     constellationLines: [
       // Line for the claws

@@ -130,7 +130,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     currentMount.appendChild(renderer.domElement);
 
     const starVertices = [];
-    for (let i = 0; i < 2000; i++) { // Reduced from 20000 to 2000
+    for (let i = 0; i < 2000; i++) {
       const x = (Math.random() - 0.5) * 2000;
       const y = (Math.random() - 0.5) * 2000;
       const z = (Math.random() - 0.5) * 2000;
@@ -149,7 +149,6 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     scene.add(stars);
 
     const storyObjects: THREE.Object3D[] = [];
-    const haloTexture = new THREE.TextureLoader().load("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAArVJREFUWEfFlz9oFEEQx/v9zG4tjZ2FjVgpiOAF2K0gWAi1tBBC0Cgq2o2N2oJlIRhYpLARIwUbsFBCSBe0sVIQLIRiEYxtYmFh7e3O3s7OzF+ws9ltz/Y/k+9n/t/sNwD4z+aABM4BEzgnSgG8ALyLeKO6s6q9g/8uQ4AFgH0BtwKkua8bAMfAVeAs8A24FngK3AamgZfAd2BNQAW4FHgGvAfeA5uB/gSoAfeA7cC6BOAA2BEwCbhy/2/AnwJ/ATaBP0C/p8BjwN4I+AcsAZ8C9yJw/bUDHwBvgJvAE+AFsD83AOcDqYAvwI/A2+AGsDWsTwKXA9UAh8B+sBsYAR4E5nwEHAHeBR7FDBz0dwEXgM5Z4BqQc+AasA7cDmz/KLAP+ADsBS4F7gG+Ac+B0d0sHAF4f+i5AZwNfO9zCiwClwA7gb3gLPAk8DTwU0A/a/AZ8B5YFbT+FGAGeBW4WqgN+F1gZ6yvBvAc4GlgBjgD/ASW17YGfG9wR2D0/T3gYyY+Bl4Fdgf+DzwCTgO/Ap8BV4EvgGvAZmBfQJ0vAs8DPwPvgI3ApMAPwNvg8CpwEngP7ANnA48B+8A14A5w/QdAh4BvwLlgTbgFfAQsD+o4MGrM9ZngZeA18J5y/BtwN+B7YDmwEbgIHAf+MWSQ/yXgGvARsB6YBW4GZgO/gM8BD4BnwNfgLPAFcAFYAm4GjoAvgfWAn8ATwAqwdQJYEfhh9n8G2AncCxwCPgZWAz8BDwI/A8cAF4BzwInASwL/QJ78e+B/4BtwS+A/8BWwT0C/G/gK+BfYXwj4H4A/gK2BwQI7Av8AXgO/x/4u4AfgL+AL8AewdY0FdgfWAz8A33wR2BIQBVgTWAz8DcwG3rY5AAAAAElFTkSuQmCC");
 
     storyPositions.forEach(({ story, position }) => {
       const group = new THREE.Group();
@@ -176,20 +175,8 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         const coreMesh = new THREE.Mesh(coreGeo, coreMat);
         starGroup.add(coreMesh);
         
-        // Star Halo
-        const haloSize = coreSize * 8;
-        const haloMat = new THREE.SpriteMaterial({
-          map: haloTexture,
-          color: 0xffa050,
-          transparent: true,
-          opacity: 0.3 * brightness,
-          blending: THREE.AdditiveBlending,
-        });
-        const haloSprite = new THREE.Sprite(haloMat);
-        haloSprite.scale.set(haloSize, haloSize, haloSize);
-        starGroup.add(haloSprite);
 
-        starGroup.position.set(starData.x, starData.y, starData.z);
+        starGroup.position.set(starData.x, starData.y, 0);
         starGroup.userData.initialBrightness = brightness;
         starGroup.userData.randomOffset = Math.random() * 100;
         group.add(starGroup);
@@ -361,11 +348,9 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
               const opacity = 0.7 + pulse * 0.3 * baseBrightness;
 
               const coreMesh = child.children[0] as THREE.Mesh;
-              const haloSprite = child.children[1] as THREE.Sprite;
 
               coreMesh.scale.set(scale, scale, scale);
               (coreMesh.material as THREE.Material).opacity = opacity;
-              (haloSprite.material as THREE.Material).opacity = opacity * 0.5;
            }
         });
       });

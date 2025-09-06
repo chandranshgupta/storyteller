@@ -24,7 +24,6 @@ type View = "celestial" | "manuscript" | "story";
 export default function Home() {
   const [view, setView] = React.useState<View>("celestial");
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
-  const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   React.useEffect(() => {
     if (view === "celestial") {
@@ -36,11 +35,7 @@ export default function Home() {
 
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setView("manuscript");
-      setIsTransitioning(false);
-    }, 1500);
+    setView("manuscript");
   };
 
   const handleBeginStory = () => {
@@ -70,8 +65,6 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-        {isTransitioning && <FallingStar />}
-
         {view === "celestial" && (
           <>
             <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
@@ -93,34 +86,3 @@ export default function Home() {
   );
 }
 
-const FallingStar = () => (
-  <div className="absolute inset-0 z-[100] flex items-center justify-center pointer-events-none">
-    <div
-      className="bg-white rounded-full animate-falling-star"
-      style={{
-        width: "10px",
-        height: "10px",
-        boxShadow: "0 0 20px 10px white",
-      }}
-    />
-    <style jsx>{`
-      @keyframes falling-star {
-        0% {
-          transform: translateY(-100vh) scale(0.1);
-          opacity: 1;
-        }
-        70% {
-          transform: translateY(0) scale(1);
-          opacity: 1;
-        }
-        100% {
-          transform: translateY(0) scale(100);
-          opacity: 0;
-        }
-      }
-      .animate-falling-star {
-        animation: falling-star 1.5s ease-in forwards;
-      }
-    `}</style>
-  </div>
-);
