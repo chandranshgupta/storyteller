@@ -18,6 +18,9 @@ const Manuscript = dynamic(() => import('@/components/manuscript').then(mod => m
 const StoryView = dynamic(() => import('@/components/story-view').then(mod => mod.StoryView), {
   loading: () => <Skeleton className="w-full h-full" />
 });
+const VideoPlayer = dynamic(() => import('@/components/video-player').then(mod => mod.VideoPlayer), {
+  loading: () => <Skeleton className="w-full h-full" />
+});
 
 
 type View = "celestial" | "manuscript" | "story";
@@ -28,12 +31,13 @@ export default function Home() {
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
   React.useEffect(() => {
-    if (view === "celestial") {
+    // Keep dark mode for video player as well
+    if (view === "celestial" || (view === "manuscript" && selectedStory?.id === 'ramayana')) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [view]);
+  }, [view, selectedStory]);
 
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
@@ -60,6 +64,17 @@ export default function Home() {
 
   const renderManuscript = () => {
     if (!selectedStory) return null;
+
+    if (selectedStory.id === 'ramayana') {
+        return (
+            <VideoPlayer
+                story={selectedStory}
+                onBeginStory={handleBeginStory}
+                onBack={handleBackToCelestial}
+            />
+        )
+    }
+
     return (
       <Manuscript 
         story={selectedStory} 
@@ -72,24 +87,25 @@ export default function Home() {
   return (
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
-        {isTransitioning && <FallingStar onAnimationComplete={handleTransitionComplete} />}
-        
-        {view === "celestial" && (
-          <>
-            <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
-              <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
-              <p className="mt-4 text-lg text-white/80">An interactive storytelling experience through the constellations.</p>
-            </div>
-            <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
-          </>
-        )}
-        
-        <React.Suspense fallback={<Skeleton className="w-full h-full" />}>
-          {view === 'manuscript' && renderManuscript()}
-          {view === 'story' && selectedStory && (
-            <StoryView story={selectedStory} onBack={handleBackToManuscript} />
+        <div className={`w-full h-full transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+          {view === "celestial" && (
+            <>
+              <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
+                <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
+                <p className="mt-4 text-lg text-white/80">An interactive storytelling experience through the constellations.</p>
+              </div>
+              <CelestialMap stories={stories} onSelectStory={handleSelectStory} />
+            </>
           )}
-        </React.Suspense>
+          
+          <React.Suspense fallback={<Skeleton className="w-full h-full" />}>
+            {view === 'manuscript' && renderManuscript()}
+            {view === 'story' && selectedStory && (
+              <StoryView story={selectedStory} onBack={handleBackToManuscript} />
+            )}
+          </React.Suspense>
+        </div>
+        {isTransitioning && <FallingStar onAnimationComplete={handleTransitionComplete} />}
       </main>
     </div>
   );

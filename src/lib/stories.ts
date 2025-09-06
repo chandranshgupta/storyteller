@@ -15,6 +15,11 @@ export interface ConstellationStar {
   brightness?: number; // Optional brightness multiplier (e.g., 1.5 for brighter)
 }
 
+export interface VideoChapter {
+    title: string;
+    url: string;
+}
+
 export interface Story {
   id: string;
   title: string;
@@ -25,6 +30,7 @@ export interface Story {
   chapters: Chapter[];
   constellation: ConstellationStar[];
   constellationLines?: string[][]; // Array of paths, each path is an array of star names
+  videos?: VideoChapter[];
 }
 
 import { ramaPadukaIcon } from "@/components/icons/rama-paduka-icon";
@@ -40,6 +46,18 @@ export const stories: Story[] = [
       "An ancient Indian epic which narrates the struggle of the divine prince Rama to rescue his wife Sita from the demon king Ravana. Along with Mahabharata, it forms the Hindu Itihasa.",
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
     icon: ramaPadukaIcon,
+    videos: [
+        { title: 'The Divine Birth', url: 'https://www.youtube.com/embed/3wGdIvno19c' },
+        { title: 'The Journey to Janakpur', url: 'https://www.youtube.com/embed/IUbg1WzkqBE' },
+        { title: 'Breaking the Bow', url: 'https://www.youtube.com/embed/u0M8cg-kiAw' },
+        { title: 'The Marriage of Rama and Sita', url: 'https://www.youtube.com/embed/eKjg2uNSg-k' },
+        { title: 'The Exile', url: 'https://www.youtube.com/embed/G9k3YE_nCgk' },
+        { title: 'The Golden Deer', url: 'https://www.youtube.com/embed/INyrw30U6ZQ' },
+        { title: 'Sita\'s Abduction', url: 'https://www.youtube.com/embed/pjQhKnAlmc8' },
+        { title: 'Gathering the Army', url: 'https://www.youtube.com/embed/WfQlGaU14q4' },
+        { title: 'The Defeat of Ravana', url: 'https://www.youtube.com/embed/vOXp6xqJypY' },
+        { title: 'The Triumphant Return to Ayodhya', url: 'https://www.youtube.com/embed/rgi1oQ4q_jU' }
+    ],
     chapters: [
       {
         title: "A Prince's Virtue",
