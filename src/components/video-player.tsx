@@ -31,25 +31,33 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   const progressIntervalRef = useRef<NodeJS.Timeout>();
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
-  const getYouTubeVideoId = (url: string) => {
+  const getYouTubeVideoId = (url: string | null): string | null => {
+    if (!url) return null;
     try {
       const urlObj = new URL(url);
       if (urlObj.hostname === 'youtu.be') {
         return urlObj.pathname.slice(1);
       }
       if (urlObj.hostname.includes('youtube.com')) {
-        return urlObj.searchParams.get('v');
+        const videoId = urlObj.searchParams.get('v');
+        if (videoId) return videoId;
+        // Fallback for /embed/ URLs
+        const pathParts = urlObj.pathname.split('/');
+        if (pathParts[1] === 'embed' && pathParts[2]) {
+            return pathParts[2];
+        }
       }
       return null;
     } catch (e) {
+      console.error("Invalid URL:", e);
       return null;
     }
   };
 
-  const videoId = currentVideo ? getYouTubeVideoId(currentVideo.url) : null;
+  const videoId = getYouTubeVideoId(currentVideo?.url ?? null);
 
   const updateProgress = () => {
-    if (playerRef.current) {
+    if (playerRef.current && typeof playerRef.current.getCurrentTime === 'function') {
       const currentTime = playerRef.current.getCurrentTime();
       const videoDuration = playerRef.current.getDuration();
       setProgress(currentTime);
@@ -68,13 +76,17 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
 
   const handleSelectVideo = (video: VideoChapter) => {
     setCurrentVideo(video);
-    setIsPlaying(true);
+    setIsPlaying(true); // Attempt to autoplay new video
   };
 
   const togglePlay = () => {
-    if (playerRef.current) {
-      isPlaying ? playerRef.current.pauseVideo() : playerRef.current.playVideo();
+    if (!playerRef.current) return;
+    if (isPlaying) {
+        playerRef.current.pauseVideo();
+    } else {
+        playerRef.current.playVideo();
     }
+    setIsPlaying(!isPlaying);
   };
 
   const handlePlayerStateChange = (event: { data: number }) => {
@@ -87,16 +99,20 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   };
 
   const handleSeek = (value: number[]) => {
+    if (!playerRef.current) return;
     const newTime = value[0];
     setProgress(newTime);
-    playerRef.current?.seekTo(newTime, true);
+    playerRef.current.seekTo(newTime, true);
   };
   
   const toggleMute = () => {
-    if (playerRef.current) {
-      isMuted ? playerRef.current.unMute() : playerRef.current.mute();
-      setIsMuted(!isMuted);
+    if (!playerRef.current) return;
+    if (isMuted) {
+        playerRef.current.unMute();
+    } else {
+        playerRef.current.mute();
     }
+    setIsMuted(!isMuted);
   };
   
   const handlePlaybackRateChange = (rate: number) => {
@@ -105,7 +121,10 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   };
 
   const toggleFullScreen = () => {
-    containerRef.current?.requestFullscreen();
+    const playerElement = playerRef.current?.getIframe();
+    if (playerElement?.requestFullscreen) {
+      playerElement.requestFullscreen();
+    }
   };
 
   const handleMouseMove = () => {
@@ -121,16 +140,20 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   };
   
   const formatTime = (seconds: number) => {
+    if (isNaN(seconds) || seconds === 0) return '00:00';
     const date = new Date(0);
-    date.setSeconds(seconds || 0);
-    return date.toISOString().substr(14, 5);
+    date.setSeconds(seconds);
+    const timeString = date.toISOString();
+    return timeString.length > 5 ? timeString.substr(14, 5) : '00:00';
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
     playerRef.current = event.target;
     playerRef.current.setPlaybackRate(playbackRate);
-    if(isMuted) playerRef.current.mute();
+    if (isMuted) playerRef.current.mute();
     updateProgress();
+    // Autoplay when ready
+    event.target.playVideo();
   }
 
   return (
@@ -180,42 +203,42 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
                 max={duration}
                 step={1}
                 onValueChange={handleSeek}
-                className="w-full h-2 cursor-pointer"
+                className="w-full h-2 cursor-pointer [&_span:first-child]:h-2"
             />
             <div className="flex items-center justify-between gap-4 text-sm">
                 <div className="flex items-center gap-2">
-                    <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={togglePlay}>
+                    <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={(e) => { e.stopPropagation(); togglePlay(); }}>
                         {isPlaying ? <Pause /> : <Play />}
                     </Button>
-                     <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={toggleMute}>
+                     <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={(e) => { e.stopPropagation(); toggleMute(); }}>
                         {isMuted ? <VolumeX /> : <Volume2 />}
                     </Button>
-                    <p className="w-20">{formatTime(progress)} / {formatTime(duration)}</p>
+                    <p className="w-24 tabular-nums">{formatTime(progress)} / {formatTime(duration)}</p>
                 </div>
                 <h2 className="text-sm sm:text-lg font-headline text-center flex-1 truncate px-4">{currentVideo?.title}</h2>
                 <div className="flex items-center gap-2">
                     <Popover>
                         <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="hover:bg-white/10">
+                            <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={(e) => e.stopPropagation()}>
                                 <Settings />
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-32 bg-black/80 border-white/20 text-white">
-                            <h4 className="text-sm font-bold mb-2">Speed</h4>
+                        <PopoverContent className="w-32 bg-black/80 border-white/20 text-white" onClick={(e) => e.stopPropagation()}>
+                            <h4 className="text-sm font-bold mb-2 px-1">Speed</h4>
                             {[0.5, 1, 1.5, 2].map(rate => (
-                                <button key={rate} onClick={() => handlePlaybackRateChange(rate)} className={cn("block w-full text-left p-1 rounded hover:bg-white/20", playbackRate === rate && 'font-bold text-primary-foreground')}>
-                                    {rate}x
+                                <button key={rate} onClick={() => handlePlaybackRateChange(rate)} className={cn("block w-full text-left p-1 rounded hover:bg-white/20", playbackRate === rate && 'font-bold bg-primary/80')}>
+                                    {rate === 1 ? 'Normal' : `${rate}x`}
                                 </button>
                             ))}
                         </PopoverContent>
                     </Popover>
-                    <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={toggleFullScreen}>
+                    <Button variant="ghost" size="icon" className="hover:bg-white/10" onClick={(e) => { e.stopPropagation(); toggleFullScreen(); }}>
                         <Fullscreen />
                     </Button>
                 </div>
             </div>
 
-            <div className="w-full overflow-x-auto pb-2">
+            <div className="w-full overflow-x-auto pb-2" onClick={(e) => e.stopPropagation()}>
                 <div className="flex space-x-2">
                 {story.videos?.map((video) => (
                     <button

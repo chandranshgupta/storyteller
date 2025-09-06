@@ -47,16 +47,16 @@ export const stories: Story[] = [
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
     icon: ramaPadukaIcon,
     videos: [
-        { title: 'The Divine Birth', url: 'https://www.youtube.com/embed/3wGdIvno19c' },
-        { title: 'The Journey to Janakpur', url: 'https://www.youtube.com/embed/IUbg1WzkqBE' },
-        { title: 'Breaking the Bow', url: 'https://www.youtube.com/embed/u0M8cg-kiAw' },
-        { title: 'The Marriage of Rama and Sita', url: 'https://www.youtube.com/embed/eKjg2uNSg-k' },
-        { title: 'The Exile', url: 'https://www.youtube.com/embed/G9k3YE_nCgk' },
-        { title: 'The Golden Deer', url: 'https://www.youtube.com/embed/INyrw30U6ZQ' },
-        { title: 'Sita\'s Abduction', url: 'https://www.youtube.com/embed/pjQhKnAlmc8' },
-        { title: 'Gathering the Army', url: 'https://www.youtube.com/embed/WfQlGaU14q4' },
-        { title: 'The Defeat of Ravana', url: 'https://www.youtube.com/embed/vOXp6xqJypY' },
-        { title: 'The Triumphant Return to Ayodhya', url: 'https://www.youtube.com/embed/rgi1oQ4q_jU' }
+        { title: 'The Divine Birth', url: 'https://www.youtube.com/watch?v=3wGdIvno19c' },
+        { title: 'The Journey to Janakpur', url: 'https://www.youtube.com/watch?v=IUbg1WzkqBE' },
+        { title: 'Breaking the Bow', url: 'https://www.youtube.com/watch?v=u0M8cg-kiAw' },
+        { title: 'The Marriage of Rama and Sita', url: 'https://www.youtube.com/watch?v=eKjg2uNSg-k' },
+        { title: 'The Exile', url: 'https://www.youtube.com/watch?v=G9k3YE_nCgk' },
+        { title: 'The Golden Deer', url: 'https://www.youtube.com/watch?v=INyrw30U6ZQ' },
+        { title: 'Sita\'s Abduction', url: 'https://www.youtube.com/watch?v=pjQhKnAlmc8' },
+        { title: 'Gathering the Army', url: 'https://www.youtube.com/watch?v=WfQlGaU14q4' },
+        { title: 'The Defeat of Ravana', url: 'https://www.youtube.com/watch?v=vOXp6xqJypY' },
+        { title: 'The Triumphant Return to Ayodhya', url: 'https://www.youtube.com/watch?v=rgi1oQ4q_jU' }
     ],
     chapters: [
       {
