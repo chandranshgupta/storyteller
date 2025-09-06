@@ -49,7 +49,7 @@ export default function Home() {
 
   const renderManuscript = () => {
     if (!selectedStory) return null;
-
+    
     if (selectedStory.id === 'ramayana') {
       return <VideoManuscript story={selectedStory} onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
     }

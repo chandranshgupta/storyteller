@@ -14,9 +14,27 @@ interface VideoManuscriptProps {
 }
 
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
-    const [activeVideo, setActiveVideo] = React.useState(story.videos?.[0]?.src || "");
-
+    const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
+    const videoRef = React.useRef<HTMLVideoElement>(null);
     const videos = story.videos || [];
+
+    const handleVideoEnded = () => {
+        if (currentVideoIndex < videos.length - 1) {
+            setCurrentVideoIndex(currentVideoIndex + 1);
+        } else {
+            // Optional: Loop back to the beginning or show an end screen
+            console.log("The epic has concluded.");
+            // setCurrentVideoIndex(0); // Uncomment to loop
+        }
+    };
+    
+    React.useEffect(() => {
+        if(videoRef.current) {
+            videoRef.current.play().catch(error => {
+                console.error("Video play failed:", error);
+            });
+        }
+    }, [currentVideoIndex]);
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 relative bg-[#f5f5dc] animate-fade-in">
@@ -30,11 +48,12 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
 
                 <div className="video-wrapper">
                     <video
-                        key={activeVideo}
-                        src={activeVideo}
+                        ref={videoRef}
+                        key={currentVideoIndex}
+                        src={videos[currentVideoIndex]?.src}
                         autoPlay
-                        loop
                         muted
+                        onEnded={handleVideoEnded}
                         playsInline
                         className="content-video"
                     ></video>
@@ -48,14 +67,14 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                     {videos.map((video, index) => (
                         <button 
                             key={index} 
-                            onClick={() => setActiveVideo(video.src)}
+                            onClick={() => setCurrentVideoIndex(index)}
                             className={cn(
                                 "flex flex-col items-center gap-2 p-2 rounded-md hover:bg-accent cursor-pointer border-2 flex-shrink-0 w-32",
-                                activeVideo === video.src ? "border-primary" : "border-transparent"
+                                currentVideoIndex === index ? "border-primary" : "border-transparent"
                             )}
                         >
                             <div className="w-28 h-16 bg-black rounded overflow-hidden">
-                                <video className="w-full h-full object-cover" src={video.src} preload="metadata" />
+                                <video className="w-full h-full object-cover" src={video.src} preload="metadata" muted playsInline />
                             </div>
                             <span className="text-xs font-body text-center text-foreground">{video.title}</span>
                         </button>
