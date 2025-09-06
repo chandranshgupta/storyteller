@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -25,8 +26,13 @@ export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
 
   const handlePlay = async () => {
     if (isLoading) return;
+    
+    if (audioUrl) {
+      audioRef.current?.play();
+      return;
+    }
+
     setIsLoading(true);
-    setAudioUrl(null);
     try {
       const result = await characterDrivenNarration({
         characterName: character,
