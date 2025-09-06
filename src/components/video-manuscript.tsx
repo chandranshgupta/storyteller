@@ -18,7 +18,7 @@ const FullscreenIcon = () => <svg viewBox="0 0 24 24"><path fill="currentColor" 
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
     const [currentVideoIndex, setCurrentVideoIndex] = React.useState(0);
     const [isPlaying, setIsPlaying] = React.useState(false);
-    const [isMuted, setIsMuted] = React.useState(false);
+    const [isMuted, setIsMuted] = React.useState(true); // Start muted for autoplay
     const [volume, setVolume] = React.useState(1);
     const [progress, setProgress] = React.useState(0);
     const [duration, setDuration] = React.useState(0);
@@ -45,20 +45,20 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         setVolume(newVolume);
         if (videoRef.current) {
             videoRef.current.volume = newVolume;
+            setIsMuted(newVolume === 0);
             videoRef.current.muted = newVolume === 0;
         }
     };
     
     const toggleMute = () => {
         if (videoRef.current) {
-            const currentMuted = !videoRef.current.muted;
-            videoRef.current.muted = currentMuted;
-            setIsMuted(currentMuted);
-            if (currentMuted) {
-              setVolume(0);
-            } else {
-              // Restore to last non-zero volume or default to 1
-              setVolume(videoRef.current.volume > 0 ? videoRef.current.volume : 1);
+            const currentlyMuted = videoRef.current.muted;
+            videoRef.current.muted = !currentlyMuted;
+            setIsMuted(!currentlyMuted);
+            if (currentlyMuted) { // it was muted, now unmuting
+                setVolume(videoRef.current.volume > 0 ? videoRef.current.volume : 1);
+            } else { // it was unmuted, now muting
+                setVolume(0);
             }
         }
     };
@@ -126,7 +126,18 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
         if (isPlaying && videoRef.current) {
             videoRef.current.play().catch(e => console.error("Autoplay of next video failed", e));
         }
-    }, [currentVideoIndex, isPlaying]);
+    }, [currentVideoIndex]);
+
+    // Effect to handle play/pause when isPlaying state changes from outside (e.g. playlist logic)
+    React.useEffect(() => {
+        if (videoRef.current) {
+            if (isPlaying) {
+                videoRef.current.play().catch(e => console.error("Effect Play failed", e));
+            } else {
+                videoRef.current.pause();
+            }
+        }
+    }, [isPlaying])
 
 
     return (
@@ -180,7 +191,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                               type="range" 
                               min="0" max="1" 
                               step="0.01"
-                              value={volume}
+                              value={isMuted ? 0 : volume}
                               onChange={handleVolumeChange}
                             />
                         </div>

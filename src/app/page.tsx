@@ -35,10 +35,8 @@ export default function Home() {
   React.useEffect(() => {
     const ramayanaStory = stories.find(s => s.id === 'ramayana');
     if (ramayanaStory && ramayanaStory.videos) {
-      // Preload the first 2-3 videos to ensure a quick start
-      ramayanaStory.videos.slice(0, 3).forEach(video => {
-        preloadVideo(video.src);
-      });
+      // Preload the first video to ensure a quick start
+      preloadVideo(ramayanaStory.videos[0].src);
     }
   }, []);
 
