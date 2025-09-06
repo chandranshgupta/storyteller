@@ -7,7 +7,7 @@ import { Manuscript } from "@/components/manuscript";
 import { StoryView } from "@/components/story-view";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
-import { RamayanaPuppetShow } from "@/components/ramayana-puppet-show";
+import { VideoManuscript } from "@/components/video-manuscript";
 
 type View = "celestial" | "manuscript" | "story";
 
@@ -51,7 +51,7 @@ export default function Home() {
     if (!selectedStory) return null;
 
     if (selectedStory.id === 'ramayana') {
-      return <RamayanaPuppetShow onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
+      return <VideoManuscript story={selectedStory} onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
     }
 
     return (
