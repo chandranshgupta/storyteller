@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import * as THREE from "three";
@@ -130,7 +131,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     currentMount.appendChild(renderer.domElement);
 
     const starVertices = [];
-    for (let i = 0; i < 2000; i++) {
+    for (let i = 0; i < 20000; i++) {
       const x = (Math.random() - 0.5) * 2000;
       const y = (Math.random() - 0.5) * 2000;
       const z = (Math.random() - 0.5) * 2000;
@@ -405,64 +406,74 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
         while(parentGroup.parent && !(parentGroup.userData.story)) {
             parentGroup = parentGroup.parent;
         }
-
         if (parentGroup.userData.story) {
             foundStory = parentGroup.userData.story;
             (parentGroup as THREE.Group).children.forEach(child => {
-                if (child.name === 'story_icon') {
-                    (child as THREE.Group).children.forEach(c => {
-                        if (c instanceof THREE.Mesh) {
-                           (c.material as THREE.MeshBasicMaterial).color.set(0xffffff);
-                           (c.material as THREE.MeshBasicMaterial).opacity = 1.0;
-                        }
-                    });
-                }
+               if (child.name === 'story_icon') {
+                   (child as THREE.Group).children.forEach(c => {
+                       if (c instanceof THREE.Mesh) {
+                          (c.material as THREE.MeshBasicMaterial).color.set(0xffe4b5);
+                          (c.material as THREE.MeshBasicMaterial).opacity = 1.0;
+                       }
+                   });
+               }
             });
         }
       }
       setHoveredStory(foundStory);
 
-      stars.rotation.x += 0.0001;
-      stars.rotation.y += 0.0001;
+
+      // Camera pan towards mouse
+      const panFactor = 0.02;
+      camera.position.x += (mouse.x * 5 - camera.position.x) * panFactor;
+      camera.position.y += (mouse.y * 5 - camera.position.y) * panFactor;
+      camera.lookAt(scene.position);
+
+
       renderer.render(scene, camera);
     };
+
     animate();
 
     const handleResize = () => {
-      camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      if (currentMount) {
+        camera.aspect = currentMount.clientWidth / currentMount.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
+      }
     };
+    
     window.addEventListener("resize", handleResize);
 
     return () => {
       window.removeEventListener("resize", handleResize);
-      clearTimeout(cometData.resetTimeout);
-      if (currentMount) {
-        currentMount.removeEventListener("mousemove", onMouseMove);
-        currentMount.removeEventListener("click", onClick);
+      currentMount.removeEventListener("mousemove", onMouseMove);
+      currentMount.removeEventListener("click", onClick);
+      if (renderer.domElement.parentElement === currentMount) {
         currentMount.removeChild(renderer.domElement);
       }
+      if(cometData.resetTimeout) {
+          clearTimeout(cometData.resetTimeout);
+      }
     };
-  }, [stories, onSelectStory, storyPositions]);
+  }, [storyPositions, onSelectStory]);
 
   return (
-    <TooltipProvider>
-      <Tooltip open={!!hoveredStory}>
-        <TooltipTrigger asChild>
-          <div ref={mountRef} className="w-full h-full cursor-pointer" />
-        </TooltipTrigger>
-        <TooltipContent
-          style={{
-            top: `${mousePos.y + 15}px`,
-            left: `${mousePos.x + 15}px`,
-            pointerEvents: "none",
-          }}
-          className="font-headline"
-        >
-          {hoveredStory?.nakshatraName}: {hoveredStory?.title}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <>
+      <div ref={mountRef} className="w-full h-full absolute top-0 left-0" />
+       {hoveredStory && (
+         <TooltipProvider>
+            <Tooltip open={true}>
+                <TooltipTrigger asChild>
+                    <div style={{ position: 'fixed', left: mousePos.x + 15, top: mousePos.y + 15, pointerEvents: 'none' }}></div>
+                </TooltipTrigger>
+                <TooltipContent className="font-headline text-lg">
+                    <p>{hoveredStory.title}</p>
+                    <p className="text-sm text-muted-foreground">{hoveredStory.nakshatraName}</p>
+                </TooltipContent>
+            </Tooltip>
+         </TooltipProvider>
+      )}
+    </>
   );
 }
