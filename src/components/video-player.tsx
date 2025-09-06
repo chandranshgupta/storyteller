@@ -73,7 +73,7 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
                 <p>{formatTime(progress)} / {formatTime(duration)}</p>
             </div>
 
-            <h2 className="text-2xl font-headline">{currentVideo?.title}</h2>
+            <h2 className="text-2xl font-headline text-center">{currentVideo?.title}</h2>
             
             <div className="w-full overflow-x-auto pb-4">
                 <div className="flex space-x-4">
