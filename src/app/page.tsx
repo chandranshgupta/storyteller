@@ -17,7 +17,8 @@ const Manuscript = dynamic(() => import('@/components/manuscript').then(mod => m
   loading: () => <Skeleton className="w-full h-full" />
 });
 const VideoManuscript = dynamic(() => import('@/components/video-manuscript').then(mod => mod.VideoManuscript), {
-  loading: () => <Skeleton className="w-full h-full" />
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full bg-black" />
 });
 const StoryView = dynamic(() => import('@/components/story-view').then(mod => mod.StoryView), {
   loading: () => <Skeleton className="w-full h-full" />
@@ -41,12 +42,12 @@ export default function Home() {
 
 
   React.useEffect(() => {
-    if (view === "celestial") {
+    if (view === "celestial" || view === "manuscript" && selectedStory?.id === 'ramayana') {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [view]);
+  }, [view, selectedStory]);
 
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
