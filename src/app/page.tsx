@@ -73,7 +73,7 @@ export default function Home() {
     <div className="flex flex-col h-screen bg-background">
       <main className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
         {isTransitioning && <FallingStar onAnimationComplete={handleTransitionComplete} />}
-        {view === "celestial" && (
+        {view === "celestial" && !isTransitioning && (
           <>
             <div className="absolute top-1/3 text-center text-white z-10 pointer-events-none">
               <h1 className="text-5xl font-bold font-headline">Nakshatra Narratives</h1>
