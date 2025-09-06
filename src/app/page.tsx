@@ -2,7 +2,6 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import type { Story } from "@/lib/stories";
 import { stories } from "@/lib/stories";
 import { preloadVideo } from "@/lib/utils";
@@ -16,10 +15,6 @@ const CelestialMap = dynamic(() => import('@/components/celestial-map').then(mod
 const Manuscript = dynamic(() => import('@/components/manuscript').then(mod => mod.Manuscript), {
   loading: () => <Skeleton className="w-full h-full" />
 });
-const VideoManuscript = dynamic(() => import('@/components/video-manuscript').then(mod => mod.VideoManuscript), {
-  ssr: false,
-  loading: () => <Skeleton className="w-full h-full bg-black" />
-});
 const StoryView = dynamic(() => import('@/components/story-view').then(mod => mod.StoryView), {
   loading: () => <Skeleton className="w-full h-full" />
 });
@@ -32,25 +27,27 @@ export default function Home() {
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
-  // Preload is less critical with YouTube, but doesn't hurt.
   React.useEffect(() => {
-    // The browser may preload metadata for youtube embeds automatically.
-    // This is kept for potential future use with local files.
+    stories.forEach(story => {
+      story.chapters.forEach(chapter => {
+        if(chapter.video) {
+          preloadVideo(chapter.video);
+        }
+      });
+    });
   }, []);
 
-
   React.useEffect(() => {
-    if (view === "celestial" || (view === "manuscript" && selectedStory?.id === 'ramayana')) {
+    if (view === "celestial") {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
-  }, [view, selectedStory]);
+  }, [view]);
 
   const handleSelectStory = (story: Story) => {
     setSelectedStory(story);
     setIsTransitioning(true);
-    // Simulate falling star animation time
     setTimeout(() => {
       setView("manuscript");
       setIsTransitioning(false);
@@ -72,11 +69,6 @@ export default function Home() {
 
   const renderManuscript = () => {
     if (!selectedStory) return null;
-    
-    if (selectedStory.id === 'ramayana' && selectedStory.videos) {
-      return <VideoManuscript story={selectedStory} onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
-    }
-
     return (
       <Manuscript 
         story={selectedStory} 
