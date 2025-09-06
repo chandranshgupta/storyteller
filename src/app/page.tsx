@@ -32,17 +32,15 @@ export default function Home() {
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
-  // Preload the first Ramayana video when the app loads to make it feel faster
+  // Preload is less critical with YouTube, but doesn't hurt.
   React.useEffect(() => {
-    const ramayanaStory = stories.find(s => s.id === 'ramayana');
-    if (ramayanaStory && ramayanaStory.videos && ramayanaStory.videos.length > 0) {
-      preloadVideo(ramayanaStory.videos[0].src);
-    }
+    // The browser may preload metadata for youtube embeds automatically.
+    // This is kept for potential future use with local files.
   }, []);
 
 
   React.useEffect(() => {
-    if (view === "celestial" || view === "manuscript" && selectedStory?.id === 'ramayana') {
+    if (view === "celestial" || (view === "manuscript" && selectedStory?.id === 'ramayana')) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");

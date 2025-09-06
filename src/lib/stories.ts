@@ -20,6 +20,7 @@ export interface VideoAsset {
     title: string; 
     src: string;
     thumbnail: string;
+    youtubeId: string;
 }
 
 export interface Story {
@@ -39,6 +40,12 @@ import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
 import { ChakraIcon } from "@/components/icons/chakra-icon";
 import { BowIcon } from "@/components/icons/bow-icon";
 
+// Helper to extract YouTube video ID from URL
+function getYouTubeID(url: string): string {
+    const arr = url.split(/(vi\/|v%3D|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+    return undefined !== arr[2] ? arr[2].split(/[?&]/)[0] : url;
+}
+
 export const stories: Story[] = [
   {
     id: "ramayana",
@@ -49,16 +56,16 @@ export const stories: Story[] = [
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
     icon: RamaPadukaIcon,
     videos: [
-        { title: "The Divine Birth", src: "/videos/0 - The Divine Birth.mp4", thumbnail: "/videos/thumbnails/0.jpg" },
-        { title: "The Journey to Janakpur", src: "/videos/1 - The Journey to Janakpur.mp4", thumbnail: "/videos/thumbnails/1.jpg" },
-        { title: "Breaking the Bow", src: "/videos/2 - Breaking the Bow.mp4", thumbnail: "/videos/thumbnails/2.jpg" },
-        { title: "The Marriage of Rama and Sita", src: "/videos/3 - The Marriage of Rama and Sita.mp4", thumbnail: "/videos/thumbnails/3.jpg" },
-        { title: "The Exile", src: "/videos/4 - The Exile.mp4", thumbnail: "/videos/thumbnails/4.jpg" },
-        { title: "The Golden Deer", src: "/videos/5 - The Golden Deer.mp4", thumbnail: "/videos/thumbnails/5.jpg" },
-        { title: "Sita's Abduction", src: "/videos/6 - Sita's Abduction.mp4", thumbnail: "/videos/thumbnails/6.jpg" },
-        { title: "Gathering the Army", src: "/videos/7 - Gathering the Army.mp4", thumbnail: "/videos/thumbnails/7.jpg" },
-        { title: "The Defeat of Ravana", src: "/videos/8 - The Defeat of Ravana.mp4", thumbnail: "/videos/thumbnails/8.jpg" },
-        { title: "The Triumphant Return to Ayodhya", src: "/videos/9 - The Triumphant Return to Ayodhya.mp4", thumbnail: "/videos/thumbnails/9.jpg" },
+        { title: "The Divine Birth", src: "", youtubeId: getYouTubeID("https://youtu.be/3wGdIvno19c"), thumbnail: "https://i.ytimg.com/vi/3wGdIvno19c/hqdefault.jpg" },
+        { title: "The Journey to Janakpur", src: "", youtubeId: getYouTubeID("https://youtu.be/IUbg1WzkqBE"), thumbnail: "https://i.ytimg.com/vi/IUbg1WzkqBE/hqdefault.jpg" },
+        { title: "Breaking the Bow", src: "", youtubeId: getYouTubeID("https://youtu.be/u0M8cg-kiAw"), thumbnail: "https://i.ytimg.com/vi/u0M8cg-kiAw/hqdefault.jpg" },
+        { title: "The Marriage of Rama and Sita", src: "", youtubeId: getYouTubeID("https://youtu.be/eKjg2uNSg-k"), thumbnail: "https://i.ytimg.com/vi/eKjg2uNSg-k/hqdefault.jpg" },
+        { title: "The Exile", src: "", youtubeId: getYouTubeID("https://youtu.be/G9k3YE_nCgk"), thumbnail: "https://i.ytimg.com/vi/G9k3YE_nCgk/hqdefault.jpg" },
+        { title: "The Golden Deer", src: "", youtubeId: getYouTubeID("https://youtu.be/INyrw30U6ZQ"), thumbnail: "https://i.ytimg.com/vi/INyrw30U6ZQ/hqdefault.jpg" },
+        { title: "Sita's Abduction", src: "", youtubeId: getYouTubeID("https://youtu.be/pjQhKnAlmc8"), thumbnail: "https://i.ytimg.com/vi/pjQhKnAlmc8/hqdefault.jpg" },
+        { title: "Gathering the Army", src: "", youtubeId: getYouTubeID("https://youtu.be/WfQlGaU14q4"), thumbnail: "https://i.ytimg.com/vi/WfQlGaU14q4/hqdefault.jpg" },
+        { title: "The Defeat of Ravana", src: "", youtubeId: getYouTubeID("https://youtu.be/vOXp6xqJypY"), thumbnail: "https://i.ytimg.com/vi/vOXp6xqJypY/hqdefault.jpg" },
+        { title: "The Triumphant Return to Ayodhya", src: "", youtubeId: getYouTubeID("https://youtu.be/rgi1oQ4q_jU"), thumbnail: "https://i.ytimg.com/vi/rgi1oQ4q_jU/hqdefault.jpg" },
     ],
     chapters: [
       {

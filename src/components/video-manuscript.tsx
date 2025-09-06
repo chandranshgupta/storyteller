@@ -1,22 +1,11 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import type { Story } from "@/lib/stories";
-import {
-  Play,
-  Pause,
-  Volume2,
-  Volume1,
-  VolumeX,
-  Maximize,
-  Minimize,
-  PictureInPicture,
-  RefreshCw,
-  ChevronsLeft,
-  ChevronsRight,
-} from "lucide-react";
+import YouTube, { YouTubeProps } from 'react-youtube';
 import { Button } from "./ui/button";
 import { BookOpen, ArrowLeft } from "lucide-react";
+import Image from "next/image";
 
 interface VideoManuscriptProps {
   story: Story;
@@ -25,193 +14,133 @@ interface VideoManuscriptProps {
 }
 
 export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps) {
-  const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [volume, setVolume] = useState(1);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isPlayerReady, setIsPlayerReady] = useState(false);
+  const [currentVideoId, setCurrentVideoId] = useState<string | null>(story.videos?.[0].youtubeId || null);
+  const [player, setPlayer] = useState<any | null>(null);
   const [showOverlay, setShowOverlay] = useState(true);
-
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const playerWrapperRef = useRef<HTMLDivElement>(null);
+  
   const videos = story.videos || [];
+  const currentVideoIndex = videos.findIndex(v => v.youtubeId === currentVideoId);
   const currentVideo = videos[currentVideoIndex];
+
+  const handleThumbnailClick = (youtubeId: string) => {
+    setCurrentVideoId(youtubeId);
+    if (showOverlay) {
+      setShowOverlay(false);
+    }
+  };
+
+  const handlePlayerReady: YouTubeProps['onReady'] = (event) => {
+    setPlayer(event.target);
+    // Don't play until user interaction
+  };
+
+  const handlePlayerStateChange: YouTubeProps['onStateChange'] = (event) => {
+    if (event.data === 0) { // 0 = ended
+      const nextIndex = currentVideoIndex + 1;
+      if (nextIndex < videos.length) {
+        setCurrentVideoId(videos[nextIndex].youtubeId);
+      } else {
+        // Loop back to the first video or show overlay
+        setCurrentVideoId(videos[0].youtubeId);
+        setShowOverlay(true);
+      }
+    }
+  };
   
   const startPlayback = () => {
     setShowOverlay(false);
-    if (videoRef.current) {
-      videoRef.current.muted = false;
-      setIsMuted(false);
-      videoRef.current.play().catch(console.error);
-    }
-  };
-
-  useEffect(() => {
-    if (videoRef.current) {
-        videoRef.current.src = currentVideo.src;
-        videoRef.current.load();
-        if (!showOverlay) {
-            videoRef.current.play().catch(console.error);
-        }
-    }
-  }, [currentVideoIndex, showOverlay]);
-  
-  const handlePlayPause = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-      } else {
-        videoRef.current.pause();
-      }
+    if(player) {
+      player.playVideo();
     }
   };
   
-  const handleEnded = () => {
-      const nextIndex = currentVideoIndex + 1;
-      if (nextIndex < videos.length) {
-          setCurrentVideoIndex(nextIndex);
-      } else {
-          // End of playlist
-          setShowOverlay(true);
-          setCurrentVideoIndex(0);
-      }
+  const opts: YouTubeProps['opts'] = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      autoplay: 0,
+      controls: 1,
+      rel: 0, // Don't show related videos
+      showinfo: 0,
+      modestbranding: 1
+    },
   };
-
-  const handleThumbnailClick = (index: number) => {
-    if (showOverlay) setShowOverlay(false);
-    setCurrentVideoIndex(index);
-    if (videoRef.current) {
-        videoRef.current.muted = false;
-        setIsMuted(false);
-    }
-  }
-
-
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const updatePlayingState = () => setIsPlaying(!video.paused);
-    const updateProgressState = () => {
-        setProgress((video.currentTime / video.duration) * 100);
-        setCurrentTime(video.currentTime);
-        if (video.duration) {
-            setDuration(video.duration);
-        }
-    };
-
-    video.addEventListener('play', updatePlayingState);
-    video.addEventListener('pause', updatePlayingState);
-    video.addEventListener('timeupdate', updateProgressState);
-    video.addEventListener('loadedmetadata', updateProgressState);
-    video.addEventListener('ended', handleEnded);
-
-    return () => {
-        video.removeEventListener('play', updatePlayingState);
-        video.removeEventListener('pause', updatePlayingState);
-        video.removeEventListener('timeupdate', updateProgressState);
-        video.removeEventListener('loadedmetadata', updateProgressState);
-        video.removeEventListener('ended', handleEnded);
-    };
-  }, []);
-
-  const toggleFullscreen = () => {
-    const player = playerWrapperRef.current;
-    if (!player) return;
-
-    if (!document.fullscreenElement) {
-        player.requestFullscreen().catch(err => {
-            console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-  };
-  
-  const formatTime = (timeInSeconds: number) => {
-    if (isNaN(timeInSeconds) || timeInSeconds === 0) return '00:00';
-    const minutes = Math.floor(timeInSeconds / 60);
-    const seconds = Math.floor(timeInSeconds % 60);
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-  }
-
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-4 sm:p-8 bg-black text-white">
-        <div ref={playerWrapperRef} className="w-full max-w-4xl flex-1 flex flex-col items-center justify-center relative group/player">
+        <div className="w-full max-w-4xl flex-1 flex flex-col items-center justify-center relative group/player">
             <Button variant="ghost" size="icon" className="absolute top-4 left-4 z-20 text-white hover:bg-white/10" onClick={onBack}>
                 <ArrowLeft />
                 <span className="sr-only">Back to Celestial Map</span>
             </Button>
 
-            <video ref={videoRef} className="w-full aspect-video" poster={currentVideo?.thumbnail} muted={isMuted} playsInline />
-            
-            {showOverlay && (
-                <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 animate-fade-in">
-                    <h1 className="text-4xl font-headline text-white mb-4">{story.title}</h1>
-                    <p className="text-white/80 max-w-xl text-center mb-8">{story.summary}</p>
-                    <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-black" onClick={startPlayback}>
-                        <Play className="mr-2" />
-                        Begin the Epic
-                    </Button>
-                </div>
-            )}
-
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover/player:opacity-100 transition-opacity duration-300">
-                <div 
-                    className="h-1 bg-white/20 cursor-pointer group/progress"
-                    onClick={(e) => {
-                        if (videoRef.current) {
-                            const rect = e.currentTarget.getBoundingClientRect();
-                            const clickX = e.clientX - rect.left;
-                            const width = rect.width;
-                            videoRef.current.currentTime = (clickX / width) * duration;
-                        }
-                    }}
-                >
-                    <div className="h-full bg-primary group-hover/progress:h-2 transition-all" style={{ width: `${progress}%` }}></div>
-                </div>
-                <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-4">
-                        <button onClick={handlePlayPause}>
-                            {isPlaying ? <Pause /> : <Play />}
-                        </button>
-                        <div className="text-sm">
-                            <span>{formatTime(currentTime)}</span> / <span>{formatTime(duration)}</span>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <button onClick={toggleFullscreen}>
-                            {document.fullscreenElement ? <Minimize /> : <Maximize />}
-                        </button>
-                    </div>
-                </div>
+            <div className="w-full aspect-video relative shadow-halo">
+              {showOverlay && currentVideo?.thumbnail && (
+                  <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center z-10 animate-fade-in">
+                      <Image src={currentVideo.thumbnail} alt={story.title} layout="fill" objectFit="cover" className="opacity-30" />
+                      <div className="relative z-20 text-center px-4">
+                        <h1 className="text-4xl font-headline text-white mb-4 drop-shadow-md">{story.title}</h1>
+                        <p className="text-white/80 max-w-xl text-center mb-8 drop-shadow-sm">{story.summary}</p>
+                        <Button size="lg" variant="outline" className="bg-transparent text-white border-white hover:bg-white hover:text-black" onClick={startPlayback}>
+                            <BookOpen className="mr-2" />
+                            Begin the Epic
+                        </Button>
+                      </div>
+                  </div>
+              )}
+              
+              {!showOverlay && currentVideoId && (
+                <YouTube 
+                  videoId={currentVideoId} 
+                  opts={opts} 
+                  onReady={handlePlayerReady} 
+                  onStateChange={handlePlayerStateChange}
+                  className="w-full h-full"
+                />
+              )}
             </div>
         </div>
         
-        <div className="w-full max-w-4xl mt-4">
+        <div className="w-full max-w-4xl mt-6">
             <h3 className="text-lg font-headline text-white mb-2">{currentVideo?.title}</h3>
-            <div className="flex gap-2 overflow-x-auto pb-2">
-                {videos.map((video, index) => (
-                    <div 
-                        key={video.src} 
-                        className={`flex-shrink-0 cursor-pointer rounded-md overflow-hidden border-2 ${currentVideoIndex === index ? 'border-primary' : 'border-transparent'} transition-all`}
-                        onClick={() => handleThumbnailClick(index)}
-                    >
-                        <img src={video.thumbnail} alt={video.title} className="w-32 h-20 object-cover" />
-                    </div>
-                ))}
+            <div className="relative">
+                <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                    {videos.map((video, index) => (
+                        <div 
+                            key={video.youtubeId} 
+                            className={`flex-shrink-0 cursor-pointer rounded-md overflow-hidden border-2 ${currentVideoIndex === index ? 'border-primary' : 'border-transparent'} transition-all`}
+                            onClick={() => handleThumbnailClick(video.youtubeId)}
+                        >
+                            <img src={video.thumbnail} alt={video.title} className="w-40 h-24 object-cover" />
+                        </div>
+                    ))}
+                </div>
             </div>
         </div>
 
         <Button onClick={onBegin} size="lg" variant="link" className="mt-4 text-white/70 hover:text-white">
-            Read Full Story
+            Read Full Text of the Story
             <BookOpen className="ml-2" />
         </Button>
+
         <style jsx>{`
+            .shadow-halo {
+              box-shadow: 0 0 15px 5px rgba(255, 193, 7, 0.15), 0 0 30px 10px rgba(255, 193, 7, 0.1), 0 0 50px 20px rgba(255, 193, 7, 0.05);
+            }
+            .custom-scrollbar::-webkit-scrollbar {
+              height: 6px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-track {
+              background: #222;
+              border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb {
+              background: #444;
+              border-radius: 3px;
+            }
+            .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+              background: #555;
+            }
             @keyframes fade-in {
                 from { opacity: 0; }
                 to { opacity: 1; }
