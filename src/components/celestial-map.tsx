@@ -123,7 +123,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       0.1,
       1000
     );
-    camera.position.z = 1;
+    camera.position.z = 5;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(currentMount.clientWidth, currentMount.clientHeight);
@@ -336,6 +336,17 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       requestAnimationFrame(animate);
 
       const time = clock.getElapsedTime();
+
+      // Slow background star rotation
+      stars.rotation.y += 0.00005;
+      
+      // Subtle camera nudge
+      const nudgeFactor = 0.5;
+      const targetX = mouse.x * nudgeFactor;
+      const targetY = mouse.y * nudgeFactor;
+      camera.position.x += (targetX - camera.position.x) * 0.05;
+      camera.position.y += (targetY - camera.position.y) * 0.05;
+
 
       // Twinkle effect for constellation stars
       storyObjects.forEach(obj => {
