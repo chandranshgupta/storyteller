@@ -6,27 +6,15 @@ import React, { useRef, useEffect, useState, useMemo } from "react";
 import type { Story, ConstellationStar } from "@/lib/stories";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
-import ReactDOMServer from 'react-dom/server';
-
 
 interface CelestialMapProps {
   stories: Story[];
   onSelectStory: (story: Story) => void;
 }
 
-function createIcon(IconComponent: React.ComponentType<{className?: string}>): THREE.Group {
-    const iconHTML = ReactDOMServer.renderToString(<IconComponent className="w-8 h-8" />);
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(iconHTML, "image/svg+xml");
-    const svgElement = doc.querySelector('svg');
-
-    if (!svgElement) {
-        console.error("Could not create SVG element from component");
-        return new THREE.Group();
-    }
-    
+function createIcon(iconSvgString: string): THREE.Group {
     const loader = new SVGLoader();
-    const svgData = loader.parse(new XMLSerializer().serializeToString(svgElement));
+    const svgData = loader.parse(iconSvgString);
     
     const group = new THREE.Group();
     const material = new THREE.MeshBasicMaterial({
@@ -142,7 +130,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     currentMount.appendChild(renderer.domElement);
 
     const starVertices = [];
-    for (let i = 0; i < 20000; i++) {
+    for (let i = 0; i < 2000; i++) { // Reduced from 20000 to 2000
       const x = (Math.random() - 0.5) * 2000;
       const y = (Math.random() - 0.5) * 2000;
       const z = (Math.random() - 0.5) * 2000;
@@ -161,7 +149,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
     scene.add(stars);
 
     const storyObjects: THREE.Object3D[] = [];
-    const haloTexture = new THREE.TextureLoader().load("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAArVJREFUWEfFlz9oFEEQx/v9zG4tjZ2FjVgpiOAF2K0gWAi1tBBC0Cgq2o2N2oJlIRhYpLARIwUbsFBCSBe0sVIQLIRiEYxtYmFh7e3O3s7OzF+ws9ltz/Y/k+9n/t/sNwD4z+aABM4BEzgnSgG8ALyLeKO6s6q9g/8uQ4AFgH0BtwKkua8bAMfAVeAs8A24FngK3AamgZfAd2BNQAW4FHgGvAfeA5uB/gSoAfeA7cC6BOAA2BEwCbhy/2/AnwJ/ATaBP0C/p8BjwN4I+AcsAZ8C9yJw/bUDHwBvgJvAE+AFsD83AOcDqYAvwI/A2+AGsDWsTwKXA9UAh8B+sBsYAR4E5nwEHAHeBR7FDBz0dwEXgM5Z4BqQc+AasA7cDmz/KLAP+ADsBS4F7gG+Ac+B0d0sHAF4f+i5AZwNfO9zCiwClwA7gb3gLPAk8DTwU0A/a/AZ8B5YFbT+FGAGeBW4WqgN+F1gZ6yvBvAc4GlgBjgD/ASW17YGfG9wR2D0/T3gYyY+Bl4Fdgf+DzwCTgO/Ap8BV4EvgGvAZmBfQJ0vAs8DPwPvgI3ApMAPwNvg8CpwEngP7ANnA48B+8A14A5w/QdAh4BvwLlgTbgFfAQsD+o4MGrM9ZngZeA18J5y/BtwN+B7YDmwEbgIHAf+MWSQ/yXgGvARsB6YBW4GZgO/gM8BD4BnwNfgLPAFcAFYAm4GjoAvgfWAn8ATwAqwdQJYEfhh9n8G2AncCxwCPgZWAz8BDwI/A8cAF4BzwInASwL/QJ78e+B/4AtwS+A/8BWwT0C/G/gK+BfYXwj4H4A/gK2BwQI7Av8AXgO/x/4u4AfgL+AL8AewdY0FdgfWAz8A33wR2BIQBVgTWAz8DcwG3rY5AAAAAElFTkSuQmCC");
+    const haloTexture = new THREE.TextureLoader().load("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAAXNSR0IArs4c6QAAArVJREFUWEfFlz9oFEEQx/v9zG4tjZ2FjVgpiOAF2K0gWAi1tBBC0Cgq2o2N2oJlIRhYpLARIwUbsFBCSBe0sVIQLIRiEYxtYmFh7e3O3s7OzF+ws9ltz/Y/k+9n/t/sNwD4z+aABM4BEzgnSgG8ALyLeKO6s6q9g/8uQ4AFgH0BtwKkua8bAMfAVeAs8A24FngK3AamgZfAd2BNQAW4FHgGvAfeA5uB/gSoAfeA7cC6BOAA2BEwCbhy/2/AnwJ/ATaBP0C/p8BjwN4I+AcsAZ8C9yJw/bUDHwBvgJvAE+AFsD83AOcDqYAvwI/A2+AGsDWsTwKXA9UAh8B+sBsYAR4E5nwEHAHeBR7FDBz0dwEXgM5Z4BqQc+AasA7cDmz/KLAP+ADsBS4F7gG+Ac+B0d0sHAF4f+i5AZwNfO9zCiwClwA7gb3gLPAk8DTwU0A/a/AZ8B5YFbT+FGAGeBW4WqgN+F1gZ6yvBvAc4GlgBjgD/ASW17YGfG9wR2D0/T3gYyY+Bl4Fdgf+DzwCTgO/Ap8BV4EvgGvAZmBfQJ0vAs8DPwPvgI3ApMAPwNvg8CpwEngP7ANnA48B+8A14A5w/QdAh4BvwLlgTbgFfAQsD+o4MGrM9ZngZeA18J5y/BtwN+B7YDmwEbgIHAf+MWSQ/yXgGvARsB6YBW4GZgO/gM8BD4BnwNfgLPAFcAFYAm4GjoAvgfWAn8ATwAqwdQJYEfhh9n8G2AncCxwCPgZWAz8BDwI/A8cAF4BzwInASwL/QJ78e+B/4BtwS+A/8BWwT0C/G/gK+BfYXwj4H4A/gK2BwQI7Av8AXgO/x/4u4AfgL+AL8AewdY0FdgfWAz8A33wR2BIQBVgTWAz8DcwG3rY5AAAAAElFTkSuQmCC");
 
     storyPositions.forEach(({ story, position }) => {
       const group = new THREE.Group();
@@ -231,7 +219,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       }
 
 
-      const icon = createIcon(story.icon);
+      const icon = createIcon(story.icon({ className: "w-8 h-8" }));
       icon.name = "story_icon";
       icon.position.set(0, 0, 0); 
       group.add(icon);

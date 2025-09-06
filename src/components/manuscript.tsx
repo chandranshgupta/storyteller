@@ -16,8 +16,8 @@ import { LoaderCircle, BookOpen, ArrowLeft } from "lucide-react";
 import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
 import { useToast } from "@/hooks/use-toast";
 import { ScrollArea } from "./ui/scroll-area";
-import { KingChessPieceIcon } from "./icons/king-chess-piece";
-import { QueenChessPieceIcon } from "./icons/queen-chess-piece";
+import { kingChessPieceIcon } from "./icons/king-chess-piece";
+import { queenChessPieceIcon } from "./icons/queen-chess-piece";
 import { cn } from "@/lib/utils";
 
 interface ManuscriptProps {
@@ -64,10 +64,10 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
 
   // Assign king/queen to characters, assuming 2-4 characters
   const characterRoles = story.characters.map((char, index) => {
-      if (index === 0) return { char, role: 'king' as const, Icon: KingChessPieceIcon };
-      if (index === 1) return { char, role: 'queen' as const, Icon: QueenChessPieceIcon };
-      if (index === 2) return { char, role: 'king' as const, Icon: KingChessPieceIcon };
-      return { char, role: 'queen' as const, Icon: QueenChessPieceIcon };
+      if (index === 0) return { char, role: 'king' as const, icon: kingChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
+      if (index === 1) return { char, role: 'queen' as const, icon: queenChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
+      if (index === 2) return { char, role: 'king' as const, icon: kingChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
+      return { char, role: 'queen' as const, icon: queenChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
   })
 
   return (
@@ -85,7 +85,7 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
           <div className="bg-primary/5 p-4 rounded-lg border">
             <h3 className="font-headline text-xl mb-4 text-center">Whose Point of View?</h3>
             <div className="flex gap-4 items-center justify-center">
-              {characterRoles.map(({char, Icon, role}) => (
+              {characterRoles.map(({char, icon}) => (
                 <button
                     key={char}
                     onClick={() => handleGeneratePov(char)}
@@ -94,9 +94,9 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
                         "flex flex-col items-center gap-2 p-4 rounded-lg transition-all duration-300",
                         selectedHero === char ? 'bg-accent scale-110' : 'hover:bg-accent/50',
                     )}
+                    dangerouslySetInnerHTML={{ __html: icon }}
                 >
-                    <Icon className="w-12 h-12 text-primary" />
-                    <span className="font-headline text-sm">{char}</span>
+                    <span className="font-headline text-sm pt-14">{char}</span>
                 </button>
               ))}
             </div>

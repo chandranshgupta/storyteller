@@ -22,15 +22,15 @@ export interface Story {
   nakshatraName: string;
   summary: string;
   characters: string[];
-  icon: ComponentType<{ className?: string }>;
+  icon: (props: {className?: string}) => string;
   chapters: Chapter[];
   constellation: ConstellationStar[];
   constellationLines?: string[][]; // Array of paths, each path is an array of star names
 }
 
-import { RamaPadukaIcon } from "@/components/icons/rama-paduka-icon";
-import { ChakraIcon } from "@/components/icons/chakra-icon";
-import { BowIcon } from "@/components/icons/bow-icon";
+import { ramaPadukaIcon } from "@/components/icons/rama-paduka-icon";
+import { chakraIcon } from "@/components/icons/chakra-icon";
+import { bowIcon } from "@/components/icons/bow-icon";
 
 export const stories: Story[] = [
   {
@@ -40,7 +40,7 @@ export const stories: Story[] = [
     summary:
       "An ancient Indian epic which narrates the struggle of the divine prince Rama to rescue his wife Sita from the demon king Ravana. Along with Mahabharata, it forms the Hindu Itihasa.",
     characters: ["Rama", "Sita", "Ravana", "Hanuman"],
-    icon: RamaPadukaIcon,
+    icon: ramaPadukaIcon,
     chapters: [
       {
         title: "A Prince's Virtue",
@@ -98,7 +98,7 @@ export const stories: Story[] = [
     summary:
       "One of the two major Sanskrit epics of ancient India, the Mahabharata is an epic narrative of the Kurukshetra War and the fates of the Kaurava and the Pandava princes.",
     characters: ["Krishna", "Arjuna", "Draupadi", "Duryodhana"],
-    icon: ChakraIcon,
+    icon: chakraIcon,
     chapters: [
       {
         title: "The Field of Dharma",
