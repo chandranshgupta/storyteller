@@ -55,7 +55,7 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
                     key={currentVideo.url}
                     width="100%"
                     height="100%"
-                    src={`${currentVideo.url}?autoplay=1&controls=0&modestbranding=1&rel=0`}
+                    src={`${currentVideo.url}?autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0`}
                     title={currentVideo.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
