@@ -27,7 +27,7 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   const [showControls, setShowControls] = useState(true);
   
   const playerRef = useRef<YouTubePlayer | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const progressIntervalRef = useRef<NodeJS.Timeout>();
   const controlsTimeoutRef = useRef<NodeJS.Timeout>();
 
@@ -61,18 +61,35 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
       const currentTime = playerRef.current.getCurrentTime();
       const videoDuration = playerRef.current.getDuration();
       setProgress(currentTime);
-      setDuration(videoDuration);
+      if (duration !== videoDuration) {
+          setDuration(videoDuration);
+      }
+      
+      // Pause before the video ends to prevent recommendations
+      if (videoDuration > 0 && currentTime >= videoDuration - 0.5) {
+          if (progressIntervalRef.current) {
+              clearInterval(progressIntervalRef.current);
+          }
+          playerRef.current.pauseVideo();
+      }
     }
   };
 
+
   useEffect(() => {
     if (isPlaying) {
-      progressIntervalRef.current = setInterval(updateProgress, 1000);
+      progressIntervalRef.current = setInterval(updateProgress, 250);
     } else {
-      clearInterval(progressIntervalRef.current);
+      if (progressIntervalRef.current) {
+        clearInterval(progressIntervalRef.current);
+      }
     }
-    return () => clearInterval(progressIntervalRef.current);
-  }, [isPlaying]);
+    return () => {
+        if (progressIntervalRef.current) {
+          clearInterval(progressIntervalRef.current);
+        }
+    };
+  }, [isPlaying, duration]);
 
   const handleSelectVideo = (video: VideoChapter) => {
     setCurrentVideo(video);
@@ -86,13 +103,13 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
     } else {
         playerRef.current.playVideo();
     }
-    setIsPlaying(!isPlaying);
   };
 
   const handlePlayerStateChange = (event: { data: number }) => {
     // -1: unstarted, 0: ended, 1: playing, 2: paused, 3: buffering, 5: cued
     if (event.data === 1) { // Playing
       setIsPlaying(true);
+      setDuration(playerRef.current?.getDuration() ?? 0);
     } else { // Paused, ended, etc.
       setIsPlaying(false);
     }
@@ -130,7 +147,12 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   const handleMouseMove = () => {
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
-    controlsTimeoutRef.current = setTimeout(() => setShowControls(false), 3000);
+    controlsTimeoutRef.current = setTimeout(() => {
+      // Only hide controls if the video is playing
+      if(isPlaying) {
+        setShowControls(false)
+      }
+    }, 3000);
   };
 
   const handleMouseLeave = () => {
@@ -140,11 +162,15 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
   };
   
   const formatTime = (seconds: number) => {
-    if (isNaN(seconds) || seconds === 0) return '00:00';
+    if (isNaN(seconds) || seconds <= 0) return '00:00';
     const date = new Date(0);
     date.setSeconds(seconds);
     const timeString = date.toISOString();
-    return timeString.length > 5 && timeString.length >= 19 ? timeString.substr(14, 5) : '00:00';
+    
+    if (seconds < 3600) {
+        return timeString.substr(14, 5);
+    }
+    return timeString.substr(11, 8);
   };
   
   const onPlayerReady = (event: { target: YouTubePlayer }) => {
@@ -190,7 +216,6 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
                 className="absolute inset-0 w-full h-full"
                 onReady={onPlayerReady}
                 onStateChange={handlePlayerStateChange}
-                onEnd={() => setIsPlaying(false)}
               />
             ) : (
                 <div className="text-center">Select a video to play.</div>
@@ -278,3 +303,5 @@ export function VideoPlayer({ story, onBeginStory, onBack }: VideoPlayerProps) {
     </div>
   );
 }
+
+    
