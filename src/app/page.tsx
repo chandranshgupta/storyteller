@@ -31,11 +31,10 @@ export default function Home() {
   const [selectedStory, setSelectedStory] = React.useState<Story | null>(null);
   const [isTransitioning, setIsTransitioning] = React.useState(false);
 
-  // Preload videos when the component mounts
+  // Preload the first Ramayana video when the app loads to make it feel faster
   React.useEffect(() => {
     const ramayanaStory = stories.find(s => s.id === 'ramayana');
-    if (ramayanaStory && ramayanaStory.videos) {
-      // Preload the first video to ensure a quick start
+    if (ramayanaStory && ramayanaStory.videos && ramayanaStory.videos.length > 0) {
       preloadVideo(ramayanaStory.videos[0].src);
     }
   }, []);
@@ -75,7 +74,7 @@ export default function Home() {
   const renderManuscript = () => {
     if (!selectedStory) return null;
     
-    if (selectedStory.id === 'ramayana') {
+    if (selectedStory.id === 'ramayana' && selectedStory.videos) {
       return <VideoManuscript story={selectedStory} onBegin={handleBeginStory} onBack={handleBackToCelestial} />;
     }
 

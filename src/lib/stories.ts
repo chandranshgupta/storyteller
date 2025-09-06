@@ -52,13 +52,13 @@ export const stories: Story[] = [
         { title: "The Divine Birth", src: "/videos/0 - The Divine Birth.mp4", thumbnail: "/videos/thumbnails/0.jpg" },
         { title: "Journey to Janakpur", src: "/videos/1 - The Journey to Janakpur.mp4", thumbnail: "/videos/thumbnails/1.jpg" },
         { title: "Breaking the Bow", src: "/videos/2 - Breaking the Bow.mp4", thumbnail: "/videos/thumbnails/2.jpg" },
-        { title: "Rama and Sita's Marriage", src: "/videos/3 - The Marriage of Rama and Sita.mp4", thumbnail: "/videos/thumbnails/3.jpg" },
+        { title: "The Marriage of Rama and Sita", src: "/videos/3 - The Marriage of Rama and Sita.mp4", thumbnail: "/videos/thumbnails/3.jpg" },
         { title: "The Exile", src: "/videos/4 - The Exile.mp4", thumbnail: "/videos/thumbnails/4.jpg" },
         { title: "The Golden Deer", src: "/videos/5 - The Golden Deer.mp4", thumbnail: "/videos/thumbnails/5.jpg" },
         { title: "Sita's Abduction", src: "/videos/6 - Sita's Abduction.mp4", thumbnail: "/videos/thumbnails/6.jpg" },
         { title: "Gathering the Army", src: "/videos/7 - Gathering the Army.mp4", thumbnail: "/videos/thumbnails/7.jpg" },
         { title: "The Defeat of Ravana", src: "/videos/8 - The Defeat of Ravana.mp4", thumbnail: "/videos/thumbnails/8.jpg" },
-        { title: "Return to Ayodhya", src: "/videos/9 - The Triumphant Return to Ayodhya.mp4", thumbnail: "/videos/thumbnails/9.jpg" },
+        { title: "The Triumphant Return to Ayodhya", src: "/videos/9 - The Triumphant Return to Ayodhya.mp4", thumbnail: "/videos/thumbnails/9.jpg" },
     ],
     chapters: [
       {
