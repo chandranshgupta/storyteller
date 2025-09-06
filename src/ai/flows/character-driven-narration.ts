@@ -63,7 +63,7 @@ const narilabsNarrationTool = ai.defineTool(
     },
     async (input) => {
         const {GradioClient} = await import('@gradio/client');
-        const client = await GradioClient.connect("nari-labs/Dia-1.6B");
+        const client = await GradioClient.connect("nari-labs/Dia-1.6B", { hf_token: process.env.HUGGING_FACE_TOKEN });
         const result = await client.predict("/generate_audio", {
             text_input: `[S1] ${input.text}`,
             max_new_tokens: 3072,
