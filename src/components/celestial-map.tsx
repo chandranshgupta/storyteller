@@ -422,14 +422,7 @@ export function CelestialMap({ stories, onSelectStory }: CelestialMapProps) {
       }
       setHoveredStory(foundStory);
 
-
-      // Camera pan towards mouse
-      const panFactor = 0.02;
-      camera.position.x += (mouse.x * 5 - camera.position.x) * panFactor;
-      camera.position.y += (mouse.y * 5 - camera.position.y) * panFactor;
       camera.lookAt(scene.position);
-
-
       renderer.render(scene, camera);
     };
 
