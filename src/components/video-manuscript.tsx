@@ -96,6 +96,7 @@ export function VideoManuscript({ story, onBegin, onBack }: VideoManuscriptProps
                   onReady={handlePlayerReady} 
                   onStateChange={handlePlayerStateChange}
                   className="w-full h-full"
+                  iframeClassName="w-full h-full"
                 />
               )}
             </div>
