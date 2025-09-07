@@ -1,0 +1,130 @@
+{
+  "epics": [
+    {
+      "title": "The Rāmāyana",
+      "metadata": {
+        "creator": "Valmiki",
+        "translator": "Manmatha Nath Dutt",
+        "language": "English",
+        "rights": "Public Domain in the USA.",
+        "subjects": [
+          "Folklore -- India",
+          "Rama (Hindu deity) -- Fiction",
+          "Epic poetry, Sanskrit -- Translations into English",
+          "Valmiki -- Adaptations"
+        ]
+      },
+      "publication_info": {
+        "editor_and_publisher": "MANMATHA NATH DUTT, M. A., Rector, Keshub Academy.",
+        "printer": "Girish Chandra Chackravarti, Deva Press, 65/2, Beadon Street. CALCUTTA.",
+        "year_range": "1891-1893"
+      },
+      "transcribers_note": "This book was transcribed from scans of several different copies of the original found at the Internet Archive. The typesetters of the original book represented the letter ā (with a macron above) as â (with circumflex above) when italicized, but this etext uses the macron throughout. Words in italics in this etext were italicized in the original book. I have corrected obvious misspellings but I've left variant spellings alone.",
+      "kandas": [
+        {
+          "kanda_title": "ARANYA KANDAM",
+          "sargas": [
+            {
+              "sarga_number": "I",
+              "content": [
+                "Having entered the great forest of Dandaka, the graceful Rāma, heroic and of mighty energy, saw an asylum of ascetics. It was graced with Kusa grass and fibres, and irradiated with Brahmanic grace difficult of being gazed at, and like unto the solar disc in the heavens. And it was resorted to by thousands of wild beasts, and was a refuge unto all creatures. And that asylum was ever kept clean and tidy; and abounded in numerous celestials and Gandharbas and Apsarās."
+              ]
+            }
+          ]
+        },
+        {
+          "kanda_title": "KISHKINDHYĀ KANDAM",
+          "sargas": [
+            {
+              "sarga_number": "I",
+              "content": [
+                "Beholding the mighty monkey on the summit of the mountain, resembling a collection of clouds, Rāma of mighty arms approaching him, addressed him in a gentle voice. Having seen those two brothers of dreadful prowess furnished with bows in their hands, the monkey chief was greatly terrified and could not approach them."
+              ]
+            }
+          ]
+        },
+        {
+          "kanda_title": "SUNDARA KANDAM",
+          "sargas": [
+            {
+              "sarga_number": "I",
+              "content": [
+                "Thereupon the intelligent Hanumān, the foremost of monkeys, having crossed the sea, that asylum of Varuna, looked towards Lankā situate on the summit of the mount Trikuta. Strewn with trees of various sorts, with their tops covered with flowers and fruits, it was surrounded by beautiful gardens. And thereupon the son of the Wind-god, stopping for a moment on the mountain-top, espied the city of Lankā situate on the other shore of the ocean."
+              ]
+            }
+          ]
+        },
+        {
+          "kanda_title": "LANKA KANDAM",
+          "sargas": [
+            {
+              "sarga_number": "I",
+              "content": [
+                "Having heard the words of Hanuman, sweet as nectar, Rāma, with his countenance beaming with joy, prepared for the great conflict. He praised the mighty Hanuman for his deeds, for crossing the impassable ocean and discovering the whereabouts of Sita, and resolved to lay siege to the mighty city of Lankā, the stronghold of the Rakshasa king, Rāvana."
+              ]
+            }
+          ]
+        },
+        {
+          "kanda_title": "UTTARA KANDAM",
+          "sargas": [
+            {
+              "sarga_number": "I",
+              "content": [
+                "After the conclusion of the great war and the triumphant return to Ayodhyā, Rāma ruled the kingdom in peace and prosperity. One day, the great sages, including Agastya, assembled to greet the victorious king. They recounted the history and lineage of the Rakshasas, telling the tale of Rāvana's birth, his boons from Brahmā, and his conquest of the three worlds, providing context to the epic struggle."
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "The Mahabharata",
+      "metadata": {
+        "creator": "Vyasa",
+        "translator": "Manmatha Nath Dutt",
+        "language": "English",
+        "rights": "Public Domain in the USA.",
+        "subjects": [
+          "Folklore -- India",
+          "Epic poetry, Sanskrit -- Translations into English"
+        ]
+      },
+      "publication_info": {
+        "editor_and_publisher": "MANMATHA NATH DUTT, M. A., Rector, Keshub Academy.",
+        "printer": "Girish Chandra Chackravarti, Deva Press, 65/2, Beadon Street. CALCUTTA.",
+        "year": "1895"
+      },
+      "transcribers_note": "This book was transcribed from scans of several different copies of the original found at the Internet Archive. The typesetters of the original book represented the letter ā (with a macron above) as â (with circumflex above) when italicized, but this etext uses the macron throughout. Words in italics in this etext were italicized in the original book. I have corrected obvious misspellings but I've left variant spellings alone.",
+      "parvas": [
+        {
+          "parva_title": "ADI PARVA",
+          "sub_parvas": [
+            {
+              "sub_parva_title": "Anukramanika Parva",
+              "adhyayas": [
+                {
+                  "adhyaya_number": "I",
+                  "content": [
+                    "Om! Having bowed down to Narayana and Nara, the most exalted male being, and also to the goddess Saraswati, must the word Jaya be uttered. Ugrasrava, the son of Lomaharshana, surnamed Sauti, well-versed in the Puranas, bending with humility, one day approached the great sages of rigid vows, sitting at their ease, who had attended the twelve years' sacrifice of Saunaka, surnamed Kulapati, in the forest of Naimisha."
+                  ]
+                }
+              ]
+            },
+            {
+              "sub_parva_title": "Sangraha Parva",
+              "adhyayas": [
+                {
+                  "adhyaya_number": "II",
+                  "content": [
+                    "The Rishis said, 'O son of Suta, we wish to hear a full and circumstantial account of the place mentioned by you as Samanta-panchaka.' Sauti said, 'O listen to me, ye Brahmanas, as I recite the sacred descriptions. Ye are worthy to hear of the holy place known as Samanta-panchaka. In the interval between the Treta and Dwapara Yugas, Parashurama, the son of Jamadagni, inflamed with wrath at the death of his father, felled the Kshatriya race.'"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
