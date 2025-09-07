@@ -155,7 +155,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
   ];
 
   return (
-    <div id="manuscript-page" className="w-full h-full bg-[#FAF8F2] text-[#2D241E] p-4 sm:p-8 flex gap-8">
+    <div id="manuscript-page" className="w-full h-full bg-background text-foreground p-4 sm:p-8 flex gap-8">
       <style jsx>{`
         #manuscript-page { font-family: 'Playfair Display', serif; }
         .pov-button {
@@ -181,7 +181,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="flex justify-between items-center pb-4 border-b-2 border-[#42352A]/20">
+        <header className="flex justify-between items-center pb-4 border-b-2 border-primary/20">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" className="hover:bg-primary/10" onClick={onBack}>
                     <ArrowLeft /> <span className="sr-only">Back</span>
@@ -206,7 +206,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
       </div>
 
       {/* Right POV Panel */}
-      <aside id="pov-panel" className="flex flex-col items-center gap-4 py-4 px-2 bg-[#E6DBC9]/50 rounded-lg border border-[#DDC9A7]">
+      <aside id="pov-panel" className="flex flex-col items-center gap-4 py-4 px-2 bg-accent/50 rounded-lg border border-ring">
         <h3 className="font-headline text-sm text-primary/80 mb-2">Character Lore</h3>
         {characters.map((char) => (
           <button key={char.name} className="pov-button" data-character={char.name} onClick={() => handleLoreClick(char.name)} title={`Learn about ${char.name}`}>
