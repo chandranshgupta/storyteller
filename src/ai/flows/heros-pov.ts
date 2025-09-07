@@ -64,30 +64,26 @@ export async function narrateFromHeroPOV(input: NarrationInput): Promise<Narrati
   }
   
   // This function now acts as part of a "Hybrid RAG" system.
-  // It retrieves the high-quality pre-generated text.
-  // A future "enhancement" step could involve a new AI prompt that takes this
-  // preGeneratedText as input to add minor, real-time details.
-  // For now, we return the pre-generated text directly for a fast user experience.
-
+  // It retrieves the high-quality pre-generated text and then enhances it.
+  
   const prompt = ai.definePrompt({
     name: 'narrateFromHeroPOVPrompt',
     input: { schema: NarrationInputSchema },
     output: { schema: NarrationOutputSchema },
     prompt: `
-        You have been given a pre-written, first-person narration from the perspective of ${character} for a chapter of the Ramayana.
-        Your task is to act as a final reviewer. Ensure the text is well-written and engaging.
-        You can make very subtle improvements, but your main goal is to preserve the authenticity of the provided text.
-        
-        RETURN THE PROVIDED TEXT, with only minor grammatical corrections if absolutely necessary. Do not add new content.
+        You are an expert storyteller tasked with enhancing a pre-written, first-person narration from the perspective of ${character} for a chapter of the Ramayana.
+        Your task is to act as a master wordsmith. Read the provided text and subtly enhance it to make it more immersive and emotionally resonant.
 
-        CONTEXT: "${preGeneratedText}"
+        RULES:
+        1.  PRESERVE THE CORE NARRATIVE: Do not change the sequence of events or add new plot points.
+        2.  ENHANCE, DON'T REPLACE: Build upon the existing text. You can rephrase sentences for better flow, add descriptive sensory details (sights, sounds, smells), and expand on the character's inner monologue, emotions, and motivations that are implied in the text.
+        3.  MAINTAIN AUTHENTICITY: The tone must be authentic to the character of ${character}.
+        4.  OUTPUT: Return only the final, enhanced narration for the full chapter. Do not include any introductory phrases like "Here is the enhanced version".
+
+        CONTEXT TO ENHANCE: "${preGeneratedText}"
     `,
   });
 
   const { output } = await prompt(input);
-  // For now, we will return the direct pre-generated text.
-  // The prompt above is a placeholder for a more complex enhancement flow.
-  return { narration: preGeneratedText };
+  return output!;
 }
-
-    
