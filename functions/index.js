@@ -33,8 +33,8 @@ exports.generateNarration = functions
             text_input: `[S1] ${text_input}`,
             audio_prompt_input: null, // Required by API, pass null for no prompt
             transcription_input: "", // Required by API, pass empty string
-            temperature: 1.8,
-            speed_factor: 1,
+            temperature: 1.2,
+            speed_factor: 0.9,
             cfg_scale: 3, 
         });
 
