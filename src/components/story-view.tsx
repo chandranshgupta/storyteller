@@ -1,12 +1,22 @@
 
 "use client";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import type { Story } from "@/lib/stories";
 import { Button } from "./ui/button";
 import { LoaderCircle, ArrowLeft } from "lucide-react";
 import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
+import { generateCharacterLore } from "@/ai/flows/character-lore";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { ScrollArea } from "./ui/scroll-area";
+
 
 interface StoryViewProps {
   story: Story;
@@ -26,8 +36,12 @@ export function StoryView({ story, onBack }: StoryViewProps) {
   const [preprocessedData, setPreprocessedData] = useState<PreprocessedChapter[]>([]);
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isPovGenerating, setIsPovGenerating] = useState(false);
   
+  const [loreCharacter, setLoreCharacter] = useState<string | null>(null);
+  const [isLoreLoading, setIsLoreLoading] = useState(false);
+  const [loreText, setLoreText] = useState("");
+
   const storyContentRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -40,12 +54,8 @@ export function StoryView({ story, onBack }: StoryViewProps) {
           fetch('/ramayana_preprocessed.json')
         ]);
         
-        if (!htmlRes.ok) {
-            throw new Error(`HTTP error! status: ${htmlRes.status} for HTML file`);
-        }
-        if (!jsonRes.ok) {
-            throw new Error(`HTTP error! status: ${jsonRes.status} for JSON file`);
-        }
+        if (!htmlRes.ok) throw new Error(`HTTP error! status: ${htmlRes.status} for HTML file`);
+        if (!jsonRes.ok) throw new Error(`HTTP error! status: ${jsonRes.status} for JSON file`);
 
         const html = await htmlRes.text();
         const data: PreprocessedChapter[] = await jsonRes.json();
@@ -67,22 +77,14 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     }
     fetchStoryData();
   }, [toast]);
-
-  const handleListen = () => {
-    console.log("Listen button clicked. Full page narration to be implemented.");
-  };
-
+  
   const handlePovClick = async (character: string) => {
     // For now, we are assuming we are always on Chapter 1 as per the Hybrid RAG plan
     const chapterId = 1;
     const chapterData = preprocessedData.find(c => c.chapter === chapterId);
 
     if (!chapterData) {
-      toast({
-        title: "Error",
-        description: "Could not find chapter data.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: "Could not find chapter data.", variant: "destructive" });
       return;
     }
 
@@ -92,11 +94,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
       : chapterData.perspectives[character];
       
     if (!preGeneratedText) {
-        toast({
-            title: "Perspective Not Found",
-            description: `A pre-generated perspective for ${character} could not be found.`,
-            variant: "destructive",
-        });
+        toast({ title: "Perspective Not Found", description: `A pre-generated perspective for ${character} could not be found.`, variant: "destructive" });
         return;
     }
     
@@ -107,7 +105,7 @@ export function StoryView({ story, onBack }: StoryViewProps) {
 
 
     // REAL-TIME ENHANCEMENT (AI call)
-    setIsGenerating(true);
+    setIsPovGenerating(true);
     try {
       const result = await narrateFromHeroPOV({
         chapterId: chapterId,
@@ -118,17 +116,33 @@ export function StoryView({ story, onBack }: StoryViewProps) {
       }
     } catch (error) {
       console.error("Error enhancing perspective:", error);
-      toast({
-        title: "Error",
-        description: "Could not enhance the character's perspective.",
-        variant: "destructive",
-      });
-       if (storyContentRef.current) {
-         storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`; // Revert on error
+      toast({ title: "Error", description: "Could not enhance the character's perspective.", variant: "destructive" });
+       if (storyContentRef.current) { // Revert on error
+         storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`; 
        }
     } finally {
-      setIsGenerating(false);
+      setIsPovGenerating(false);
     }
+  };
+  
+  const handleLoreClick = async (character: string) => {
+    setLoreCharacter(character);
+    setIsLoreLoading(true);
+    setLoreText(`<p>Summoning the story of ${character}...</p>`);
+    try {
+      const result = await generateCharacterLore({ characterName: character });
+      setLoreText(result.lore.replace(/\n/g, '<br><br>'));
+    } catch (error) {
+       console.error("Error generating lore:", error);
+       setLoreText("The ancient scrolls are silent at this moment. Please try again.");
+       toast({ title: "Error", description: "Failed to generate character lore.", variant: "destructive" });
+    } finally {
+      setIsLoreLoading(false);
+    }
+  }
+  
+  const handleListen = () => {
+    console.log("Listen button clicked. Full page narration to be implemented.");
   };
 
   const characters = [
@@ -142,39 +156,25 @@ export function StoryView({ story, onBack }: StoryViewProps) {
   return (
     <div id="manuscript-page" className="w-full h-full bg-[#FAF8F2] text-[#2D241E] p-4 sm:p-8 flex gap-8">
       <style jsx>{`
-        #manuscript-page {
-          font-family: 'Playfair Display', serif;
-        }
+        #manuscript-page { font-family: 'Playfair Display', serif; }
         .pov-button {
-          width: 60px;
-          height: 60px;
-          border-radius: 50%;
-          border: 2px solid #DDC9A7;
-          background-color: #F2EFE6;
-          transition: all 0.2s ease-in-out;
-          cursor: pointer;
-          overflow: hidden;
-          position: relative;
+          width: 60px; height: 60px; border-radius: 50%;
+          border: 2px solid #DDC9A7; background-color: #F2EFE6;
+          transition: all 0.2s ease-in-out; cursor: pointer;
+          overflow: hidden; position: relative;
         }
         .pov-button:hover, .pov-button.active {
-          border-color: #42352A;
-          transform: scale(1.1);
+          border-color: #42352A; transform: scale(1.1);
           box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .pov-button img {
-            object-fit: cover;
-            object-position: center;
-        }
+        .pov-button img { object-fit: cover; object-position: center; }
         #story-content :global(h1), #story-content :global(h2), #story-content :global(h3) {
-            font-family: 'Playfair Display', serif;
-            color: #42352A;
+            font-family: 'Playfair Display', serif; color: #42352A;
             margin-bottom: 1rem;
         }
         #story-content :global(p) {
-            font-family: 'PT Sans', sans-serif;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-            text-align: justify;
+            font-family: 'PT Sans', sans-serif; line-height: 1.8;
+            margin-bottom: 1.5rem; text-align: justify;
         }
       `}</style>
 
@@ -183,53 +183,54 @@ export function StoryView({ story, onBack }: StoryViewProps) {
         <header className="flex justify-between items-center pb-4 border-b-2 border-[#42352A]/20">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" className="hover:bg-primary/10" onClick={onBack}>
-                    <ArrowLeft />
-                    <span className="sr-only">Back</span>
+                    <ArrowLeft /> <span className="sr-only">Back</span>
                 </Button>
                 <h1 className="text-2xl sm:text-4xl font-headline text-primary">The Ramayana</h1>
             </div>
-          <Button
-            id="listen-button"
-            onClick={handleListen}
-            variant="ghost"
-            className="text-lg text-primary hover:bg-primary/10 font-headline"
-          >
+          <Button id="listen-button" onClick={handleListen} variant="ghost" className="text-lg text-primary hover:bg-primary/10 font-headline">
             Listen ▶
           </Button>
         </header>
 
         <div className="prose-lg max-w-none flex-1 overflow-y-auto p-4 relative">
           {isLoading ? (
-            <div className="flex items-center justify-center h-full">
-                <LoaderCircle className="animate-spin text-primary" size={48} />
-            </div>
+            <div className="flex items-center justify-center h-full"><LoaderCircle className="animate-spin text-primary" size={48} /></div>
           ) : (
             <div id="story-content" ref={storyContentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
           )}
-
-          {isGenerating && (
-            <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
-                 <LoaderCircle className="animate-spin text-primary" size={32} />
-            </div>
+          {isPovGenerating && (
+            <div className="absolute inset-0 bg-background/50 flex items-center justify-center"><LoaderCircle className="animate-spin text-primary" size={32} /></div>
           )}
         </div>
       </div>
 
       {/* Right POV Panel */}
       <aside id="pov-panel" className="flex flex-col items-center gap-4 py-4 px-2 bg-[#E6DBC9]/50 rounded-lg border border-[#DDC9A7]">
-        <h3 className="font-headline text-sm text-primary/80 mb-2">Point of View</h3>
+        <h3 className="font-headline text-sm text-primary/80 mb-2">Character Lore</h3>
         {characters.map((char) => (
-          <button
-            key={char.name}
-            className="pov-button"
-            data-character={char.name}
-            onClick={() => handlePovClick(char.name)}
-            title={char.name}
-          >
+          <button key={char.name} className="pov-button" data-character={char.name} onClick={() => handleLoreClick(char.name)} title={`Learn about ${char.name}`}>
             <Image src={char.image} alt={char.name} layout="fill" />
           </button>
         ))}
       </aside>
+
+      {/* Lore Modal */}
+       <Dialog open={!!loreCharacter} onOpenChange={(isOpen) => !isOpen && setLoreCharacter(null)}>
+        <DialogContent className="bg-[#f4f1ea] border-[#3a2a1a] max-w-3xl h-[80vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="font-headline text-3xl text-primary text-center">The Story of {loreCharacter}</DialogTitle>
+             <DialogClose className="text-primary hover:text-foreground" />
+          </DialogHeader>
+          <ScrollArea className="flex-1 min-h-0">
+            <div className="p-6 font-body text-base text-foreground/90 prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: loreText }} />
+             {isLoreLoading && (
+                <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
+                    <LoaderCircle className="animate-spin text-primary" size={32} />
+                </div>
+            )}
+          </ScrollArea>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
