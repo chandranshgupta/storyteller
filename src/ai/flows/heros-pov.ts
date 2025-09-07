@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -10,46 +11,51 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 const NarrationInputSchema = z.object({
-  storySummary: z
-    .string()
-    .describe('A summary of the story to be narrated.'),
-  heroName: z
+  chapterId: z
+    .number()
+    .describe('The ID of the chapter to be narrated.'),
+  characterName: z
     .string()
     .describe('The name of the hero whose perspective to use.'),
 });
 export type NarrationInput = z.infer<typeof NarrationInputSchema>;
 
 const NarrationOutputSchema = z.object({
-  narration: z.string().describe('The story narrated from the hero perspective.'),
+  narration: z.string().describe("The story chapter narrated from the hero's perspective."),
 });
 export type NarrationOutput = z.infer<typeof NarrationOutputSchema>;
 
-export async function narrateFromHeroPOV(input: NarrationInput): Promise<NarrationOutput> {
-  return narrateFromHeroPOVFlow(input);
+
+async function getChapterText(chapterId: number): Promise<string> {
+    const filePath = path.join(process.cwd(), 'public', 'ramayana_complete.json');
+    const fileContent = await fs.readFile(filePath, 'utf8');
+    const storyData = JSON.parse(fileContent);
+    const chapter = storyData.find((chap: any) => chap.chapter === chapterId);
+    if (!chapter) {
+        throw new Error(`Chapter ${chapterId} not found.`);
+    }
+    return chapter.text;
 }
 
-const prompt = ai.definePrompt({
-  name: 'narrateFromHeroPOVPrompt',
-  input: {schema: NarrationInputSchema},
-  output: {schema: NarrationOutputSchema},
-  prompt: `You are a skilled storyteller, adept at narrating stories from different perspectives.
 
-  Please narrate the following story summary from the point of view of {{heroName}}.
-  Focus on the hero's thoughts, feelings, and experiences.  Select details that best support the hero's POV.
+export async function narrateFromHeroPOV(input: NarrationInput): Promise<NarrationOutput> {
+  const chapterText = await getChapterText(input.chapterId);
 
-  Story Summary: {{{storySummary}}}`,
-});
+  const prompt = ai.definePrompt({
+    name: 'narrateFromHeroPOVPrompt',
+    input: { schema: NarrationInputSchema },
+    output: { schema: NarrationOutputSchema },
+    prompt: `Based ONLY on the following context from the Ramayana for a given chapter:
+CONTEXT: "${chapterText}"
 
-const narrateFromHeroPOVFlow = ai.defineFlow(
-  {
-    name: 'narrateFromHeroPOVFlow',
-    inputSchema: NarrationInputSchema,
-    outputSchema: NarrationOutputSchema,
-  },
-  async input => {
-    const {output} = await prompt(input);
-    return output!;
-  }
-);
+TASK: Rewrite the entire provided context from the first-person perspective of the character: ${input.characterName}. Emphasize their inner thoughts, emotions, and personal motivations related to the events in this specific chapter. The tone should be authentic to their character.
+`,
+  });
+
+  const { output } = await prompt(input);
+  return output!;
+}
