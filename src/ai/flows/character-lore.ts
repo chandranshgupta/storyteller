@@ -16,9 +16,8 @@ const CharacterLoreInputSchema = z.object({
 });
 export type CharacterLoreInput = z.infer<typeof CharacterLoreInputSchema>;
 
-const CharacterLoreOutputSchema = z.object({
-  lore: z.string().describe('The detailed, generated lore for the character, approximately 500-700 words.'),
-});
+// Corrected Output Schema to expect a direct string
+const CharacterLoreOutputSchema = z.string().describe('The detailed, generated lore for the character, approximately 500-700 words.');
 export type CharacterLoreOutput = z.infer<typeof CharacterLoreOutputSchema>;
 
 export async function generateCharacterLore(input: CharacterLoreInput): Promise<CharacterLoreOutput> {
@@ -28,13 +27,13 @@ export async function generateCharacterLore(input: CharacterLoreInput): Promise<
 const lorePrompt = ai.definePrompt({
   name: 'characterLorePrompt',
   input: {schema: CharacterLoreInputSchema},
-  output: {schema: CharacterLoreOutputSchema},
+  output: { format: 'text' }, // We expect a plain text string
   prompt: `
     You are a master storyteller and scholar of the Ramayana, speaking with a reverent and epic tone.
     Generate a detailed character lore for {{{characterName}}}.
     The lore must cover their origin, key personality traits (like Rama's dharma or Sita's resilience), their pivotal moments in the epic, their primary motivations, and their ultimate role in the grander scheme of the story. 
     The response should be comprehensive and insightful, approximately 500-700 words long.
-    Return the lore as a single string of text.
+    Return only the lore as a single block of text, without any additional formatting or labels.
   `,
   config: {
     model: 'googleai/gemini-1.5-flash-latest',
@@ -53,6 +52,8 @@ const generateCharacterLoreFlow = ai.defineFlow(
   },
   async (input) => {
     const {output} = await lorePrompt(input);
+    // The output is now the string directly
     return output!;
   }
 );
+

@@ -131,7 +131,8 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     setLoreText(`<p>Summoning the story of ${character}...</p>`);
     try {
       const result = await generateCharacterLore({ characterName: character });
-      setLoreText(result.lore.replace(/\n/g, '<br><br>'));
+      // The result is now a string directly
+      setLoreText(result.replace(/\n/g, '<br><br>'));
     } catch (error) {
        console.error("Error generating lore:", error);
        setLoreText("The ancient scrolls are silent at this moment. Please try again.");
