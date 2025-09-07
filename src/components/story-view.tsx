@@ -6,6 +6,7 @@ import { Button } from "./ui/button";
 import { LoaderCircle, ArrowLeft } from "lucide-react";
 import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
 import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
 
 interface StoryViewProps {
   story: Story;
@@ -23,73 +24,73 @@ interface PreprocessedChapter {
 
 export function StoryView({ story, onBack }: StoryViewProps) {
   const [preprocessedData, setPreprocessedData] = useState<PreprocessedChapter[]>([]);
-  const [currentChapter, setCurrentChapter] = useState<PreprocessedChapter | null>(null);
-  const [displayedText, setDisplayedText] = useState<string>("");
+  const [htmlContent, setHtmlContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [popup, setPopup] = useState<{ x: number, y: number, text: string } | null>(null);
-  const [guruPopup, setGuruPopup] = useState<{ text: string } | null>(null);
-
+  
   const storyContentRef = useRef<HTMLDivElement>(null);
-  const wisdomIconRef = useRef<HTMLSpanElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
     async function fetchStoryData() {
       setIsLoading(true);
       try {
-        const response = await fetch('/ramayana_preprocessed.json');
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const [htmlRes, jsonRes] = await Promise.all([
+          fetch('/ramayanakatha.html'),
+          fetch('/ramayana_preprocessed.json')
+        ]);
+        
+        if (!htmlRes.ok) {
+            throw new Error(`HTTP error! status: ${htmlRes.status} for HTML file`);
         }
-        const data: PreprocessedChapter[] = await response.json();
+        if (!jsonRes.ok) {
+            throw new Error(`HTTP error! status: ${jsonRes.status} for JSON file`);
+        }
+
+        const html = await htmlRes.text();
+        const data: PreprocessedChapter[] = await jsonRes.json();
+        
+        setHtmlContent(html);
         setPreprocessedData(data);
-        const firstChapter = data.find(chap => chap.chapter === 1);
-        if (firstChapter) {
-          setCurrentChapter(firstChapter);
-          setDisplayedText(firstChapter.text_original);
-        }
+
       } catch (error) {
-        console.error("Failed to load Ramayana data:", error);
+        console.error("Failed to load story data:", error);
         toast({
             title: "Error",
-            description: "Could not load the story text.",
+            description: "Could not load the story.",
             variant: "destructive",
         })
+        setHtmlContent("<p>Error: Could not load story content.</p>");
       } finally {
         setIsLoading(false);
       }
     }
     fetchStoryData();
-  }, [story.id, toast]);
-
-  // Close popups when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (popup && wisdomIconRef.current && !wisdomIconRef.current.contains(event.target as Node)) {
-        setPopup(null);
-      }
-      if (guruPopup) {
-        setGuruPopup(null);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [popup, guruPopup]);
+  }, [toast]);
 
   const handleListen = () => {
-    // This button is now just for show until we implement full page narration
     console.log("Listen button clicked. Full page narration to be implemented.");
   };
 
   const handlePovClick = async (character: string) => {
-    if (!currentChapter) return;
+    // For now, we are assuming we are always on Chapter 1 as per the Hybrid RAG plan
+    const chapterId = 1;
+    const chapterData = preprocessedData.find(c => c.chapter === chapterId);
+
+    if (!chapterData) {
+      toast({
+        title: "Error",
+        description: "Could not find chapter data.",
+        variant: "destructive",
+      });
+      return;
+    }
 
     // INSTANT RETRIEVAL from pre-processed file
     const preGeneratedText = character.toLowerCase() === 'rama'
-      ? currentChapter.text_original
-      : currentChapter.perspectives[character];
-
+      ? chapterData.text_original
+      : chapterData.perspectives[character];
+      
     if (!preGeneratedText) {
         toast({
             title: "Perspective Not Found",
@@ -100,157 +101,116 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     }
     
     // Instantly display the high-quality, pre-generated text
-    setDisplayedText(preGeneratedText);
+    if (storyContentRef.current) {
+        storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+    }
+
 
     // REAL-TIME ENHANCEMENT (AI call)
-    // This step now uses the pre-generated text as a base, making it faster.
     setIsGenerating(true);
     try {
       const result = await narrateFromHeroPOV({
-        chapterId: currentChapter.chapter,
+        chapterId: chapterId,
         characterName: character,
       });
-      // In a full Hybrid RAG, the result might be an "enhanced" text.
-      // For now, we'll just re-set the pre-generated text.
-      setDisplayedText(result.narration);
+      if (storyContentRef.current) {
+        storyContentRef.current.innerHTML = `<p>${result.narration.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
+      }
     } catch (error) {
-      console.error("Error generating perspective:", error);
+      console.error("Error enhancing perspective:", error);
       toast({
         title: "Error",
         description: "Could not enhance the character's perspective.",
         variant: "destructive",
       });
-      setDisplayedText(preGeneratedText); // Revert on error
+       if (storyContentRef.current) {
+         storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`; // Revert on error
+       }
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const handleTextSelection = () => {
-    const selection = window.getSelection();
-    if (selection && selection.toString().trim().length > 0) {
-      const range = selection.getRangeAt(0);
-      const rect = range.getBoundingClientRect();
-      const containerRect = storyContentRef.current?.getBoundingClientRect();
-      
-      if(containerRect) {
-         setPopup({
-          x: rect.right - containerRect.left,
-          y: rect.top - containerRect.top,
-          text: selection.toString()
-        });
-      }
-    } else {
-      setPopup(null);
-    }
-  };
-
-  const handleWisdomClick = () => {
-    if (!popup) return;
-    const selectedText = popup.text;
-    setPopup(null);
-    setGuruPopup({ text: `[Fetching philosophical insight for: '${selectedText}'... The full explanation will be generated by the RAG system here.]` });
-  };
-
-  const characters = ["Rama", "Sita", "Hanuman", "Dashratha", "Kaikeyi"];
+  const characters = [
+    { name: "Rama", image: "/rama.png" },
+    { name: "Sita", image: "/sita.png" },
+    { name: "Hanuman", image: "/hanuman.png" },
+    { name: "Dashratha", image: "/dashratha.png" },
+    { name: "Kaikeyi", image: "/kaikeyi.png" }
+  ];
 
   return (
-    <div id="manuscript-page" className="w-full h-full bg-[#f5f5dc] text-[#1a1a1a] font-serif p-4 sm:p-8 flex gap-8">
+    <div id="manuscript-page" className="w-full h-full bg-[#FAF8F2] text-[#2D241E] p-4 sm:p-8 flex gap-8">
       <style jsx>{`
         #manuscript-page {
-          font-family: Georgia, serif;
+          font-family: 'Playfair Display', serif;
         }
         .pov-button {
           width: 60px;
           height: 60px;
           border-radius: 50%;
-          border: 2px solid #553B28;
-          background-color: #E6DBC9;
+          border: 2px solid #DDC9A7;
+          background-color: #F2EFE6;
           transition: all 0.2s ease-in-out;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.75rem;
-          text-align: center;
           cursor: pointer;
+          overflow: hidden;
+          position: relative;
         }
-        .pov-button:hover {
-          background-color: #D2B48C;
+        .pov-button:hover, .pov-button.active {
+          border-color: #42352A;
           transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        .guru-popup {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          background-color: #FAF8F2;
-          border: 1px solid #DDC9A7;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-          padding: 2rem;
-          z-index: 100;
-          max-width: 500px;
-          border-radius: 0.5rem;
+        .pov-button img {
+            object-fit: cover;
+            object-position: center;
         }
-        .wisdom-icon {
-            position: absolute;
-            cursor: pointer;
-            font-size: 1.5rem;
-            line-height: 1;
-            user-select: none;
-            z-index: 50;
+        #story-content :global(h1), #story-content :global(h2), #story-content :global(h3) {
+            font-family: 'Playfair Display', serif;
+            color: #42352A;
+            margin-bottom: 1rem;
+        }
+        #story-content :global(p) {
+            font-family: 'PT Sans', sans-serif;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            text-align: justify;
         }
       `}</style>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        <header className="flex justify-between items-center pb-4 border-b-2 border-[#553B28]/20">
+      <div className="flex-1 flex flex-col min-w-0">
+        <header className="flex justify-between items-center pb-4 border-b-2 border-[#42352A]/20">
             <div className="flex items-center gap-4">
                 <Button variant="ghost" size="icon" className="hover:bg-primary/10" onClick={onBack}>
                     <ArrowLeft />
                     <span className="sr-only">Back</span>
                 </Button>
-                <h1 className="text-2xl sm:text-4xl font-headline text-primary">{currentChapter ? `Chapter ${currentChapter.chapter}: The ${story.title}` : story.title}</h1>
+                <h1 className="text-2xl sm:text-4xl font-headline text-primary">The Ramayana</h1>
             </div>
           <Button
             id="listen-button"
             onClick={handleListen}
             variant="ghost"
-            className="text-lg text-primary hover:bg-primary/10"
+            className="text-lg text-primary hover:bg-primary/10 font-headline"
           >
             Listen ▶
           </Button>
         </header>
 
-        <div 
-          id="story-content"
-          ref={storyContentRef}
-          onMouseUp={handleTextSelection}
-          className="prose-lg max-w-none flex-1 overflow-y-auto p-4 relative"
-        >
+        <div className="prose-lg max-w-none flex-1 overflow-y-auto p-4 relative">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
                 <LoaderCircle className="animate-spin text-primary" size={48} />
             </div>
           ) : (
-            <p className="text-justify leading-relaxed whitespace-pre-wrap">{displayedText}</p>
+            <div id="story-content" ref={storyContentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
           )}
 
           {isGenerating && (
             <div className="absolute inset-0 bg-background/50 flex items-center justify-center">
                  <LoaderCircle className="animate-spin text-primary" size={32} />
             </div>
-          )}
-
-          {popup && (
-            <span
-              ref={wisdomIconRef}
-              className="wisdom-icon"
-              style={{ left: `${popup.x}px`, top: `${popup.y}px` }}
-              onClick={handleWisdomClick}
-              title="Get Guru's Commentary"
-            >
-              🪷
-            </span>
           )}
         </div>
       </div>
@@ -260,25 +220,16 @@ export function StoryView({ story, onBack }: StoryViewProps) {
         <h3 className="font-headline text-sm text-primary/80 mb-2">Point of View</h3>
         {characters.map((char) => (
           <button
-            key={char}
+            key={char.name}
             className="pov-button"
-            data-character={char}
-            onClick={() => handlePovClick(char)}
+            data-character={char.name}
+            onClick={() => handlePovClick(char.name)}
+            title={char.name}
           >
-            {char}
+            <Image src={char.image} alt={char.name} layout="fill" />
           </button>
         ))}
       </aside>
-
-      {/* Guru Popup */}
-      {guruPopup && (
-        <div id="guru-popup" className="guru-popup">
-            <p>{guruPopup.text}</p>
-             <Button variant="outline" size="sm" onClick={() => setGuruPopup(null)} className="mt-4">Close</Button>
-        </div>
-      )}
     </div>
   );
 }
-
-    
