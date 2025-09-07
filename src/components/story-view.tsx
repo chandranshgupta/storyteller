@@ -135,8 +135,8 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     { name: "Rama", image: "/rama.png" },
     { name: "Sita", image: "/sita.png" },
     { name: "Hanuman", image: "/hanuman.png" },
-    { name: "Dashratha", image: "/dashratha.png" },
-    { name: "Kaikeyi", image: "/kaikeyi.png" }
+    { name: "Dashratha", image: "/darshratha.png" },
+    { name: "Kaikeyi", image: "/Kaikeyi.png" }
   ];
 
   return (
