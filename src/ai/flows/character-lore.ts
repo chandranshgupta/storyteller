@@ -29,11 +29,10 @@ const lorePrompt = ai.definePrompt({
   input: {schema: CharacterLoreInputSchema},
   output: { format: 'text' }, // We expect a plain text string
   prompt: `
-    You are a master storyteller and scholar of the Ramayana, speaking with a reverent and epic tone.
-    Generate a detailed character lore for {{{characterName}}}.
-    The lore must cover their origin, key personality traits (like Rama's dharma or Sita's resilience), their pivotal moments in the epic, their primary motivations, and their ultimate role in the grander scheme of the story. 
-    The response should be comprehensive and insightful, approximately 500-700 words long.
-    Return only the lore as a single block of text, without any additional formatting or labels.
+    As a master storyteller, narrate the life of {{{characterName}}} from the Ramayana.
+    Focus on the lesser-known stories and details about their life, both before and during the events of the epic.
+    Generate the lore in a compelling, storytelling manner, revealing insights that few people know.
+    Keep the narrative focused solely on {{{characterName}}}.
   `,
   config: {
     model: 'googleai/gemini-1.5-flash-latest',
