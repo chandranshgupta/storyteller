@@ -81,6 +81,13 @@ export function StoryView({ story, onBack }: StoryViewProps) {
   const handlePovClick = async (character: string) => {
     // For now, we are assuming we are always on Chapter 1 as per the Hybrid RAG plan
     const chapterId = 1;
+    
+    // FIX: Ensure preprocessedData is an array before using .find()
+    if (!Array.isArray(preprocessedData)) {
+      toast({ title: "Error", description: "Story data is not available yet. Please wait a moment and try again.", variant: "destructive" });
+      return;
+    }
+
     const chapterData = preprocessedData.find(c => c.chapter === chapterId);
 
     if (!chapterData) {
