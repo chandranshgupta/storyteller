@@ -11,15 +11,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./ui/tooltip";
-import { functions } from "@/lib/firebase";
-import { httpsCallable } from "firebase/functions";
 
 interface DialoguePlayerProps {
   character: string;
   text: string;
 }
 
-const generateNarration = httpsCallable(functions, 'generateNarration');
+const NARRATION_FUNCTION_URL = 'https://us-central1-nakshatra-narratives.cloudfunctions.net/generateNarration';
 
 export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -38,15 +36,34 @@ export function DialoguePlayer({ character, text }: DialoguePlayerProps) {
 
     setIsLoading(true);
     try {
-      // Securely call our Firebase Function
-      const result: any = await generateNarration({ text_to_speak: text });
-      const newAudioUrl = result.data.audioUrl;
+      // Securely call our Firebase Function via HTTP
+      const response = await fetch(NARRATION_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ data: { text_to_speak: text } }), // Functions expect a 'data' wrapper
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'The narration service failed.');
+      }
+      
+      const result = await response.json();
+      const newAudioUrl = result.result?.audioUrl; // onCall functions wrap response in 'result'
+
+      if (!newAudioUrl) {
+          throw new Error("The narration service returned an invalid response.");
+      }
+      
       setAudioUrl(newAudioUrl);
-    } catch (error) {
+
+    } catch (error: any) {
       console.error("Narration failed:", error);
       toast({
         title: "Narration Error",
-        description: "Could not generate audio for this dialogue.",
+        description: error.message || "Could not generate audio for this dialogue.",
         variant: "destructive",
       });
     } finally {

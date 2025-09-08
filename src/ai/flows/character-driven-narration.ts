@@ -3,7 +3,8 @@
 /**
  * @fileOverview This file is no longer in use for narration. 
  * The narration is now handled by a secure Firebase Function.
- * See /functions/index.js for the backend implementation.
+ * See /functions/index.js for the backend implementation and
+ * /src/components/dialogue-player.tsx for the frontend implementation.
  */
 
 import {ai} from '@/ai/genkit';
