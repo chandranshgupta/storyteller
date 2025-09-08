@@ -6,7 +6,7 @@ const firebaseConfig = {
   "projectId": "nakshatra-narratives",
   "appId": "1:929258642354:web:0588c63ae417cf58b7e2ab",
   "storageBucket": "nakshatra-narratives.firebasestorage.app",
-  "apiKey": "AIzaSyAmuLiD1cVt-sMfmkgoQLcqODb1uobB3gI",
+  "apiKey": "AIzaSyDYSzMvfBEKOWxvzyxMXUln7Fm0L767nsk",
   "authDomain": "nakshatra-narratives.firebaseapp.com",
   "measurementId": "",
   "messagingSenderId": "929258642354"
