@@ -1,10 +1,9 @@
 
 "use client";
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import type { Story } from "@/lib/stories";
 import { Button } from "./ui/button";
 import { LoaderCircle, ArrowLeft } from "lucide-react";
-import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
 import { generateCharacterLore } from "@/ai/flows/character-lore";
 import { useToast } from "@/hooks/use-toast";
 import Image from "next/image";
@@ -33,10 +32,8 @@ interface PreprocessedChapter {
 }
 
 export function StoryView({ story, onBack }: StoryViewProps) {
-  const [preprocessedData, setPreprocessedData] = useState<PreprocessedChapter[]>([]);
   const [htmlContent, setHtmlContent] = useState<string>("");
   const [isLoading, setIsLoading] = useState(true);
-  const [isPovGenerating, setIsPovGenerating] = useState(false);
   
   const [loreCharacter, setLoreCharacter] = useState<string | null>(null);
   const [isLoreLoading, setIsLoreLoading] = useState(false);
@@ -49,20 +46,10 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     async function fetchStoryData() {
       setIsLoading(true);
       try {
-        const [htmlRes, jsonRes] = await Promise.all([
-          fetch('/ramayanakatha.html'),
-          fetch('/ramayana_preprocessed.json')
-        ]);
-        
-        if (!htmlRes.ok) throw new Error(`HTTP error! status: ${htmlRes.status} for HTML file`);
-        if (!jsonRes.ok) throw new Error(`HTTP error! status: ${jsonRes.status} for JSON file`);
-
-        const html = await htmlRes.text();
-        const data: PreprocessedChapter[] = await jsonRes.json();
-        
+        const res = await fetch('/ramayanakatha.html');
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status} for HTML file`);
+        const html = await res.text();
         setHtmlContent(html);
-        setPreprocessedData(data);
-
       } catch (error) {
         console.error("Failed to load story data:", error);
         toast({
@@ -77,60 +64,6 @@ export function StoryView({ story, onBack }: StoryViewProps) {
     }
     fetchStoryData();
   }, [toast]);
-  
-  const handlePovClick = async (character: string) => {
-    // For now, we are assuming we are always on Chapter 1 as per the Hybrid RAG plan
-    const chapterId = 1;
-    
-    // FIX: Ensure preprocessedData is an array before using .find()
-    if (!Array.isArray(preprocessedData)) {
-      toast({ title: "Error", description: "Story data is not available yet. Please wait a moment and try again.", variant: "destructive" });
-      return;
-    }
-
-    const chapterData = preprocessedData.find(c => c.chapter === chapterId);
-
-    if (!chapterData) {
-      toast({ title: "Error", description: "Could not find chapter data.", variant: "destructive" });
-      return;
-    }
-
-    // INSTANT RETRIEVAL from pre-processed file
-    const preGeneratedText = character.toLowerCase() === 'rama'
-      ? chapterData.text_original
-      : chapterData.perspectives[character];
-      
-    if (!preGeneratedText) {
-        toast({ title: "Perspective Not Found", description: `A pre-generated perspective for ${character} could not be found.`, variant: "destructive" });
-        return;
-    }
-    
-    // Instantly display the high-quality, pre-generated text
-    if (storyContentRef.current) {
-        storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
-    }
-
-
-    // REAL-TIME ENHANCEMENT (AI call)
-    setIsPovGenerating(true);
-    try {
-      const result = await narrateFromHeroPOV({
-        chapterId: chapterId,
-        characterName: character,
-      });
-      if (storyContentRef.current) {
-        storyContentRef.current.innerHTML = `<p>${result.narration.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`;
-      }
-    } catch (error) {
-      console.error("Error enhancing perspective:", error);
-      toast({ title: "Error", description: "Could not enhance the character's perspective.", variant: "destructive" });
-       if (storyContentRef.current) { // Revert on error
-         storyContentRef.current.innerHTML = `<p>${preGeneratedText.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br>')}</p>`; 
-       }
-    } finally {
-      setIsPovGenerating(false);
-    }
-  };
   
   const handleLoreClick = async (character: string) => {
     setLoreCharacter(character);
@@ -205,9 +138,6 @@ export function StoryView({ story, onBack }: StoryViewProps) {
             <div className="flex items-center justify-center h-full"><LoaderCircle className="animate-spin text-primary" size={48} /></div>
           ) : (
             <div id="story-content" ref={storyContentRef} dangerouslySetInnerHTML={{ __html: htmlContent }} />
-          )}
-          {isPovGenerating && (
-            <div className="absolute inset-0 bg-background/50 flex items-center justify-center"><LoaderCircle className="animate-spin text-primary" size={32} /></div>
           )}
         </div>
       </div>

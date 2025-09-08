@@ -1,7 +1,6 @@
 
 "use client";
 
-import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -12,13 +11,7 @@ import {
 } from "./ui/card";
 import { Button } from "./ui/button";
 import type { Story } from "@/lib/stories";
-import { LoaderCircle, BookOpen, ArrowLeft } from "lucide-react";
-import { narrateFromHeroPOV } from "@/ai/flows/heros-pov";
-import { useToast } from "@/hooks/use-toast";
-import { ScrollArea } from "./ui/scroll-area";
-import { kingChessPieceIcon } from "./icons/king-chess-piece";
-import { queenChessPieceIcon } from "./icons/queen-chess-piece";
-import { cn } from "@/lib/utils";
+import { BookOpen, ArrowLeft } from "lucide-react";
 
 interface ManuscriptProps {
   story: Story;
@@ -27,49 +20,6 @@ interface ManuscriptProps {
 }
 
 export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
-  const [selectedHero, setSelectedHero] = useState<string>("");
-  const [povText, setPovText] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
-  const { toast } = useToast();
-
-  const handleGeneratePov = async (hero: string) => {
-    if (!hero) {
-      toast({
-        title: "Select a Character",
-        description: "Please choose a character to see their point of view.",
-        variant: "destructive",
-      });
-      return;
-    }
-    setSelectedHero(hero);
-    setIsGenerating(true);
-    setPovText("");
-    try {
-      const result = await narrateFromHeroPOV({
-        storySummary: story.summary,
-        heroName: hero,
-      });
-      setPovText(result.narration);
-    } catch (error) {
-      console.error("POV generation failed:", error);
-      toast({
-        title: "Generation Failed",
-        description: "Could not generate the character's perspective.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsGenerating(false);
-    }
-  };
-
-  // Assign king/queen to characters, assuming 2-4 characters
-  const characterRoles = story.characters.map((char, index) => {
-      if (index === 0) return { char, role: 'king' as const, icon: kingChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
-      if (index === 1) return { char, role: 'queen' as const, icon: queenChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
-      if (index === 2) return { char, role: 'king' as const, icon: kingChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
-      return { char, role: 'queen' as const, icon: queenChessPieceIcon({ className: "w-12 h-12 text-primary" }) };
-  })
-
   return (
     <div className="w-full h-full flex items-center justify-center p-4 sm:p-8 relative">
        <Button variant="ghost" size="icon" className="absolute top-4 left-4 z-10" onClick={onBack}>
@@ -81,40 +31,8 @@ export function Manuscript({ story, onBegin, onBack }: ManuscriptProps) {
           <CardTitle className="font-headline text-4xl">{story.title}</CardTitle>
           <CardDescription className="font-body text-base pt-2">{story.summary}</CardDescription>
         </CardHeader>
-        <CardContent className="flex-1 min-y-0 overflow-y-auto p-4 md:p-6 space-y-6">
-          <div className="bg-primary/5 p-4 rounded-lg border">
-            <h3 className="font-headline text-xl mb-4 text-center">Whose Point of View?</h3>
-            <div className="flex gap-4 items-center justify-center">
-              {characterRoles.map(({char, icon}) => (
-                <button
-                    key={char}
-                    onClick={() => handleGeneratePov(char)}
-                    disabled={isGenerating}
-                    className={cn(
-                        "flex flex-col items-center gap-2 p-4 rounded-lg transition-all duration-300",
-                        selectedHero === char ? 'bg-accent scale-110' : 'hover:bg-accent/50',
-                    )}
-                >
-                    <div dangerouslySetInnerHTML={{ __html: icon }} />
-                    <span className="font-headline text-sm pt-14 absolute">{char}</span>
-                </button>
-              ))}
-            </div>
-
-            {isGenerating && (
-                <div className="flex justify-center items-center h-48 mt-4">
-                    <LoaderCircle className="animate-spin text-primary" size={32} />
-                </div>
-            )}
-            
-            {povText && (
-                <ScrollArea className="h-48 mt-4">
-                  <p className="font-body text-sm whitespace-pre-wrap p-4 bg-background rounded-md">
-                    {povText}
-                  </p>
-                </ScrollArea>
-            )}
-          </div>
+        <CardContent className="flex-1 min-y-0 overflow-y-auto p-4 md:p-6 text-center">
+            <p className="text-muted-foreground">Prepare to immerse yourself in the epic tale.</p>
         </CardContent>
         <CardFooter className="flex-col sm:flex-row justify-center gap-4 p-6">
           <Button onClick={onBegin} size="lg">
