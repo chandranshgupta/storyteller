@@ -66,11 +66,11 @@ Installation
 
     Clone the repo
 
-    git clone [https://github.com/your_username/your_project_name.git](https://github.com/your_username/your_project_name.git)
+    git clone [https://github.com/chandranshgupta/storyteller.git](https://github.com/chandranshgupta/storyteller.git)
 
     Install NPM packages
 
-    cd your_project_name
+    cd storyteller
     npm install
 
     Set up environment variables
@@ -115,9 +115,9 @@ Don't forget to give the project a star! Thanks again!
 
     Fork the Project
 
-    Create your Feature Branch (git checkout -b feature/AmazingFeature)
+    Create storyteller Feature Branch (git checkout -b feature/AmazingFeature)
 
-    Commit your Changes (git commit -m 'Add some AmazingFeature')
+    Commit storyteller Changes (git commit -m 'Add some AmazingFeature')
 
     Push to the Branch (git push origin feature/AmazingFeature)
 
@@ -128,6 +128,5 @@ Don't forget to give the project a star! Thanks again!
 Distributed under the MIT License. See LICENSE.txt for more information.
 👨‍💻 Contact
 
-Chandransh Gupta - @your_twitter_handle - your.email@example.com
-
-Project Link: https://github.com/your_username/your_project_name
+Chandransh Gupta -gupta.chandransh2004@gmail.com
+Project Link: https://github.com/chandranshgupta/storyteller
